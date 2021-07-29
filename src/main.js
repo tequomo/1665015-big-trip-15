@@ -8,8 +8,11 @@ import { createTripInfoTemplate } from './view/trip-info.js';
 import { createShowPointTemplate } from './view/point.js';
 import { createEditPointTemplate } from './view/point-edit.js';
 import { createStatsTemplate } from './view/stat.js';
+import { generateEvents } from './mock/points.js';
 
 const POINT_COUNT = 3;
+
+console.log(generateEvents());
 
 const renderNode = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
