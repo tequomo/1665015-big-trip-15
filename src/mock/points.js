@@ -21,7 +21,7 @@ const EVENT_CITIES = [
   'Brugge',
 ];
 
-const CITIES_DESCRIPTIONS = [
+const DESTINATION_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
   'Fusce tristique felis at fermentum pharetra.',
@@ -35,35 +35,81 @@ const CITIES_DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
+const OFFERS_TITLES = [
+  'Choose meal',
+  'Choose seats',
+  'Add luggage',
+  'Add breakfast',
+  'Travel by train',
+  'Choose temperature',
+  'Choose comfort class',
+  'Choose business class',
+  'Upgrade to comfort class',
+  'Upgrade to business class',
+];
+
 const COST_MIN = 0;
-const COST_MAX = 800;
+const COST_MAX = 500;
 const PHRASE_COUNT_MIN = 1;
 const PHRASE_COUNT_MAX = 5;
+const MAX_DAYS_INTERVAL = 7;
+const MAX_HOURS_INTERVAL = 12;
+const OFFER_MIN_PRICE = 10;
+const OFFER_MAX_PRICE = 200;
+
 
 const getRandomValue = (array) => {
   const randomIndex = getRandomInteger(0, array.length - 1);
   return array[randomIndex];
 };
 
-export const generateEvents = () => {
-  const eventType = getRandomValue(EVENT_TYPES);
-  const eventCity = getRandomValue(EVENT_CITIES);
-  const eventCitiesDescription = getRandomLengthArray(CITIES_DESCRIPTIONS, getRandomInteger(PHRASE_COUNT_MIN, PHRASE_COUNT_MAX)).join(' ');
-  const isFavorite = Boolean(getRandomInteger(0, 1));
-
-  const maxTripDuration = 7;
-  const daysGap = getRandomInteger(1, maxTripDuration);
-  const eventStartTime = dayjs().add(daysGap, 'day').format('DD/MM/YYYY HH:mm');
-  const eventEndTime = dayjs().add(daysGap, 'day').add(daysGap, 'hour').format('DD/MM/YYYY HH:mm');
+const generateDestination = () => {
+  const name = getRandomValue(EVENT_CITIES);
+  const description = getRandomLengthArray(DESTINATION_DESCRIPTIONS, getRandomInteger(PHRASE_COUNT_MIN, PHRASE_COUNT_MAX)).join(' ');
 
   return {
-    eventType,
-    eventCity,
-    eventCitiesDescription,
-    eventStartTime,
-    eventEndTime,
-    eventCost: getRandomInteger(COST_MIN, COST_MAX),
-    eventOffers: null,
+    name,
+    description,
+    picture: [
+      {
+        src: '',
+        description: '',
+      },
+    ],
+  };
+};
+
+const generateDate = () => {
+  const daysInterval = getRandomInteger(-MAX_DAYS_INTERVAL, MAX_DAYS_INTERVAL);
+  const hoursInterval = getRandomInteger(-MAX_HOURS_INTERVAL, MAX_HOURS_INTERVAL);
+
+  return [
+    dayjs().add(daysInterval, 'day').toDate(),
+    dayjs().add(daysInterval, 'day').add(hoursInterval, 'hour').toDate(),
+  ];
+};
+
+const generateOffers = () => new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
+
+export const generateEvents = () => {
+  const eventType = getRandomValue(EVENT_TYPES);
+  const isFavorite = Boolean(getRandomInteger(0, 1));
+
+  const dates = generateDate();
+  const dateFrom = Math.min(...dates);
+  const dateTo = Math.max(...dates);
+  const basePrice = getRandomInteger(COST_MIN, COST_MAX);
+  const destination = generateDestination();
+  const eventOffers = generateOffers();
+
+  return {
+    basePrice,
+    dateFrom,
+    dateTo,
+    destination,
+    id: 0,
     isFavorite,
+    eventOffers,
+    eventType,
   };
 };
