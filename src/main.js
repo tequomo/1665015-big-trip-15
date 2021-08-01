@@ -48,7 +48,7 @@ renderNode(tripEventsListNode, createEditPointTemplate(), 'beforeend');
 // renderNode(tripEventsListNode, createAddNewPointTemplate(), 'beforeend');
 
 for (let i = 0; i < POINT_COUNT; i++) {
-  renderNode(tripEventsListNode, createShowPointTemplate(), 'beforeend');
+  renderNode(tripEventsListNode, createShowPointTemplate(events[i]), 'beforeend');
 }
 
 // renderNode(statsNode, createStatsTemplate(), 'beforeend');

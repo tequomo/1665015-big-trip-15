@@ -44,8 +44,6 @@ const OFFERS_TITLES = [
   'Choose temperature',
   'Choose comfort class',
   'Choose business class',
-  'Upgrade to comfort class',
-  'Upgrade to business class',
 ];
 
 const COST_MIN = 0;
@@ -54,6 +52,7 @@ const PHRASE_COUNT_MIN = 1;
 const PHRASE_COUNT_MAX = 5;
 const MAX_DAYS_INTERVAL = 7;
 const MAX_HOURS_INTERVAL = 12;
+const MAX_MINUTES_INTERVAL = 30;
 const OFFER_MIN_PRICE = 10;
 const OFFER_MAX_PRICE = 200;
 
@@ -82,14 +81,25 @@ const generateDestination = () => {
 const generateDate = () => {
   const daysInterval = getRandomInteger(-MAX_DAYS_INTERVAL, MAX_DAYS_INTERVAL);
   const hoursInterval = getRandomInteger(-MAX_HOURS_INTERVAL, MAX_HOURS_INTERVAL);
+  const minutesInterval = getRandomInteger(-MAX_MINUTES_INTERVAL, MAX_MINUTES_INTERVAL);
 
   return [
     dayjs().add(daysInterval, 'day').toDate(),
-    dayjs().add(daysInterval, 'day').add(hoursInterval, 'hour').toDate(),
+    dayjs().add(daysInterval, 'day').add(hoursInterval, 'hour').add(minutesInterval, 'minute').toDate(),
   ];
 };
 
-const generateOffers = () => new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
+// const generateOffers = () => new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
+
+const generateOffers = () => {
+  const offers = new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
+
+  const uniqueOffers = offers.reduce((acc, offer) => acc.map[offer.title] ? acc : ((acc.map[offer.title] = true), acc.uniqueOffers.push(offer), acc), {
+    map: {},
+    uniqueOffers: [],
+  }).uniqueOffers;
+  return uniqueOffers;
+};
 
 export const generateEvents = () => {
   const eventType = getRandomValue(EVENT_TYPES);
@@ -101,7 +111,7 @@ export const generateEvents = () => {
   const basePrice = getRandomInteger(COST_MIN, COST_MAX);
   const destination = generateDestination();
   const eventOffers = generateOffers();
-
+  // console.log(eventOffers);
   return {
     basePrice,
     dateFrom,
