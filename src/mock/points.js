@@ -36,14 +36,20 @@ const DESTINATION_DESCRIPTIONS = [
 ];
 
 const OFFERS_TITLES = [
+  'Laundry',
   'Choose meal',
+  'Order meal',
   'Choose seats',
   'Add luggage',
+  'Drive slowly',
   'Add breakfast',
   'Travel by train',
+  'Choose VIP area',
+  'Infotainment system',
   'Choose temperature',
   'Choose comfort class',
   'Choose business class',
+  'Choose the radio station',
 ];
 
 const COST_MIN = 0;
@@ -89,9 +95,16 @@ const generateDate = () => {
   ];
 };
 
+// const generateOffers = () => new Array(EVENT_TYPES.length).fill().map((index) => ({'type': EVENT_TYPES[index], 'offers': [{'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}]}));
+
+const generateOffers = () => EVENT_TYPES.map((value) => ({'type': value, 'offers': [{'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}]}));
+
+
+console.log(generateOffers());
+
 // const generateOffers = () => new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
 
-const generateOffers = () => {
+const getSelectedOffers = () => {
   const offers = new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
 
   const uniqueOffers = offers.reduce((acc, offer) => acc.map[offer.title] ? acc : ((acc.map[offer.title] = true), acc.uniqueOffers.push(offer), acc), {
@@ -110,7 +123,7 @@ export const generateEvents = () => {
   const dateTo = Math.max(...dates);
   const basePrice = getRandomInteger(COST_MIN, COST_MAX);
   const destination = generateDestination();
-  const eventOffers = generateOffers();
+  const eventOffers = getSelectedOffers();
   // console.log(eventOffers);
   return {
     basePrice,
