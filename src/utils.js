@@ -16,3 +16,5 @@ export const getRandomLengthArray = (sourceArray, maxLength) => {
 };
 
 export const sortByKey = (key) => (a, b) => a[key] > b[key] ? 1 : -1;
+
+export const getBoolean = () => Boolean(getRandomInteger(0, 1));

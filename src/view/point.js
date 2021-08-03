@@ -9,32 +9,30 @@ const getDuration = (start, end) => {
   return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
 };
 
-const showSelectedOffers = (offers) => {
-  let selectedOffers = `<h4 class="visually-hidden">Offers:</h4>
-  <ul class="event__selected-offers">`;
-  for (const offer of offers) {
-    const { title, price } = offer;
-    selectedOffers += `<li class="event__offer">
-    <span class="event__offer-title">${title}</span>
+// const showSelectedOffers = (offers) => {
+//   let selectedOffers = `<h4 class="visually-hidden">Offers:</h4>
+//   <ul class="event__selected-offers">`;
+//   for (const offer of offers) {
+//     const { title, price } = offer;
+//     selectedOffers += `<li class="event__offer">
+//     <span class="event__offer-title">${title}</span>
+//     &plus;&euro;&nbsp;
+//     <span class="event__offer-price">${price}</span>
+//   </li>`;
+//   }
+//   selectedOffers += '</ul>';
+//   return selectedOffers;
+// };
+
+const showOffers = (offers) => ((offers.length !== 0) ? (`<h4 class="visually-hidden">Offers:</h4>
+  <ul class="event__selected-offers">
+  ${offers.map((offer) =>
+    `<li class="event__offer">
+    <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
-    <span class="event__offer-price">${price}</span>
-  </li>`;
-  }
-  selectedOffers += '</ul>';
-  return selectedOffers;
-//   `<ul class="event__selected-offers">
-//     <li class="event__offer">
-//     <span class="event__offer-title">Add luggage</span>
-//     &plus;&euro;&nbsp;
-//     <span class="event__offer-price">50</span>
-//   </li>
-//   <li class="event__offer">
-//     <span class="event__offer-title">Switch to comfort</span>
-//     &plus;&euro;&nbsp;
-//     <span class="event__offer-price">80</span>
-//   </li>
-// </ul>`;
-};
+    <span class="event__offer-price">${offer.price}</span>
+  </li>`).join('\n')}
+  </ul>`) : '');
 
 export const createShowPointTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, eventType, isFavorite, eventOffers, destination: { name } } = point;
@@ -63,7 +61,7 @@ export const createShowPointTemplate = (point) => {
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
-      ${(eventOffers.length !== 0) ? showSelectedOffers(eventOffers) : ''}
+      ${showOffers(eventOffers)}
       <button class="event__favorite-btn ${(isFavorite) ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
