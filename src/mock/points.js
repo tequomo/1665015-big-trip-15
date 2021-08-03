@@ -97,10 +97,22 @@ const generateDate = () => {
 
 // const generateOffers = () => new Array(EVENT_TYPES.length).fill().map((index) => ({'type': EVENT_TYPES[index], 'offers': [{'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}]}));
 
-const generateOffers = () => EVENT_TYPES.map((value) => ({'type': value, 'offers': [{'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}]}));
 
+export const generateOffers = () => EVENT_TYPES.map(
+  (value) => (
+    {'type': value,
+      'offers': new Array(getRandomInteger(0, 6)).fill().map(
+        () =>
+          ({
+            'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)],
+            'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE),
+          }),
+      ),
+    }),
+);
 
-console.log(generateOffers());
+// console.log(generateOffers());
+// const allOffers = generateOffers();
 
 // const generateOffers = () => new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
 
@@ -114,6 +126,14 @@ const getSelectedOffers = () => {
   return uniqueOffers;
 };
 
+// const getOffers = (type, offers) => {
+//   const allTypeOffers = (offers.find((offer) => offer.type === type)).offers;
+//   console.log(allTypeOffers);
+//   return allTypeOffers.slice(0, getRandomInteger(0, allTypeOffers.length - 1));
+// };
+// console.log(getOffers('Bus', allOffers));
+
+
 export const generateEvents = () => {
   const eventType = getRandomValue(EVENT_TYPES);
   const isFavorite = Boolean(getRandomInteger(0, 1));
@@ -124,6 +144,7 @@ export const generateEvents = () => {
   const basePrice = getRandomInteger(COST_MIN, COST_MAX);
   const destination = generateDestination();
   const eventOffers = getSelectedOffers();
+  // const eventOffers = getOffers(eventType, offers);
   // console.log(eventOffers);
   return {
     basePrice,

@@ -14,3 +14,5 @@ export const getRandomLengthArray = (sourceArray, maxLength) => {
   shuffleArray(sourceArray);
   return sourceArray.slice(0, getRandomInteger(1, maxLength));
 };
+
+export const sortByKey = (key) => (a, b) => a[key] > b[key] ? 1 : -1;
