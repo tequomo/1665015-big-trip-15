@@ -101,31 +101,12 @@ export const generateOffers = () => EVENT_TYPES.map(
 
 const allOffers = generateOffers();
 
-// const generateOffers = () => new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
-
-// const getSelectedOffers = () => {
-//   const offers = new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
-
-//   const uniqueOffers = offers.reduce((acc, offer) => acc.map[offer.title] ? acc : ((acc.map[offer.title] = true), acc.uniqueOffers.push(offer), acc), {
-//     map: {},
-//     uniqueOffers: [],
-//   }).uniqueOffers;
-//   return uniqueOffers;
-// };
-
-// const getOffers = (type, offers) => {
-//   const allTypeOffers = (offers.find((offer) => offer.type === type)).offers;
-//   // console.log(allTypeOffers);
-//   return allTypeOffers.slice(0, getRandomInteger(0, allTypeOffers.length - 1));
-// };
-
 const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type === type)).offers;
 
 const getSelectedOffers = (type, offers) => {
   const availableOffers = getAvailableOffers(type, offers);
   return availableOffers.slice(0, getRandomInteger(0, availableOffers.length));
 };
-
 
 const eventsDataHelper = () => {
   const eventType = getRandomValue(EVENT_TYPES);
@@ -139,7 +120,6 @@ const eventsDataHelper = () => {
   return [eventType, isFavorite, dateFrom, dateTo, basePrice, destination, eventOffers];
 };
 
-// console.log(eventsDataHelper());
 
 export const generateEvents = () => {
   const [ eventType, isFavorite, dateFrom, dateTo, basePrice, destination, eventOffers ] = eventsDataHelper();

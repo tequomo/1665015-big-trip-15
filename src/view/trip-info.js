@@ -6,10 +6,9 @@ const getTripChain = (points) => `<h1 class="trip-info__title">${(points.length 
 
 
 export const createTripInfoTemplate = (points) => (points.length !== 0) ? `<section class="trip-main__trip-info  trip-info">
-  <div class="trip-info__main">
-  ${getTripChain(points)}
+    <div class="trip-info__main">
+      ${getTripChain(points)}
 
-  ${getTripRoute(points)}
-  </div>
-
+      ${getTripRoute(points)}
+    </div>
   </section>` : '';

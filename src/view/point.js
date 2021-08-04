@@ -9,21 +9,6 @@ const getDuration = (start, end) => {
   return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
 };
 
-// const showSelectedOffers = (offers) => {
-//   let selectedOffers = `<h4 class="visually-hidden">Offers:</h4>
-//   <ul class="event__selected-offers">`;
-//   for (const offer of offers) {
-//     const { title, price } = offer;
-//     selectedOffers += `<li class="event__offer">
-//     <span class="event__offer-title">${title}</span>
-//     &plus;&euro;&nbsp;
-//     <span class="event__offer-price">${price}</span>
-//   </li>`;
-//   }
-//   selectedOffers += '</ul>';
-//   return selectedOffers;
-// };
-
 const showOffers = (offers) => ((offers.length !== 0) ? (`<h4 class="visually-hidden">Offers:</h4>
   <ul class="event__selected-offers">
   ${offers.map((offer) =>
@@ -34,14 +19,20 @@ const showOffers = (offers) => ((offers.length !== 0) ? (`<h4 class="visually-hi
   </li>`).join('\n')}
   </ul>`) : '');
 
-export const createShowPointTemplate = (point) => {
-  const { basePrice, dateFrom, dateTo, eventType, isFavorite, eventOffers, destination: { name } } = point;
+const showPointDataHelper = (dateFrom, dateTo) => {
   const eventDate = dayjs(dateFrom).format('YYYY-MM-DD');
   const shortEventDate = dayjs(dateFrom).format('MMM DD');
   const startTime = dayjs(dateFrom).format('YYYY-MM-DD[T]HH:mm');
   const shortStartTime = dayjs(dateFrom).format('HH:mm');
   const endTime = dayjs(dateTo).format('YYYY-MM-DD[T]HH:mm');
   const shortEndTime = dayjs(dateTo).format('HH:mm');
+
+  return [eventDate, shortEventDate, startTime, shortStartTime, endTime, shortEndTime];
+};
+
+export const createShowPointTemplate = (point) => {
+  const { basePrice, dateFrom, dateTo, eventType, isFavorite, eventOffers, destination: { name } } = point;
+  const [eventDate, shortEventDate, startTime, shortStartTime, endTime, shortEndTime] = showPointDataHelper(dateFrom, dateTo);
 
   return `<li class="trip-events__item">
     <div class="event">
