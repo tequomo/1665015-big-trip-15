@@ -1,12 +1,26 @@
 import dayjs from 'dayjs';
+import { allOffers } from '../mock/points.js';
 import { getBoolean } from '../utils.js';
 
+
+// const showAvailableOffers = (offers) => ((offers.length !== 0) ? (`<section class="event__section  event__section--offers">
+//   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+//   <div class="event__available-offers">${offers.map((offer) => `<div class="event__offer-selector">
+//   <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').pop()}-1" type="checkbox" name="event-offer-${offer.title.split(' ').pop()}" ${(getBoolean()) ? 'checked' : ''} >
+//   <label class="event__offer-label" for="event-offer-${offer.title.split(' ').pop()}-1">
+//     <span class="event__offer-title">${offer.title}</span>
+//     &plus;&euro;&nbsp;
+//     <span class="event__offer-price">${offer.price}</span>
+//   </label>
+// </div>`).join('\n')}
+//   </div>
+// </section>`) : '');
 
 const showAvailableOffers = (offers) => ((offers.length !== 0) ? (`<section class="event__section  event__section--offers">
   <h3 class="event__section-title  event__section-title--offers">Offers</h3>
   <div class="event__available-offers">${offers.map((offer) => `<div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${(getBoolean()) ? 'checked' : ''} >
-  <label class="event__offer-label" for="event-offer-luggage-1">
+  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').pop()}-1" type="checkbox" name="event-offer-${offer.title.split(' ').pop()}" ${(getBoolean()) ? 'checked' : ''} >
+  <label class="event__offer-label" for="event-offer-${offer.title.split(' ').pop()}-1">
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
@@ -15,9 +29,22 @@ const showAvailableOffers = (offers) => ((offers.length !== 0) ? (`<section clas
   </div>
 </section>`) : '');
 
+const showDestination = (name, description, pictures) => (name) ? (
+  `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${description}</p>
+    ${(pictures.length !== 0) ?
+    `<div class="event__photos-container">
+      <div class="event__photos-tape">
+      ${pictures.map((picture) =>
+    `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('\n')}
+      </div>
+    </div>` : ''}
+  </section>`) : '';
 
-export const createEditPointTemplate = (point) => {
-  const {basePrice, dateFrom, dateTo, eventType, eventOffers, destination: { name } } = point;
+
+export const createEditPointTemplate = (point, add = false) => {
+  const {basePrice, dateFrom, dateTo, eventType, eventOffers, destination: { name, description, pictures } } = point;
   const startDate = dayjs(dateFrom).format('DD[/]MM[/]YY HH:mm');
   const endDate = dayjs(dateTo).format('DD[/]MM[/]YY HH:mm');
 
@@ -117,18 +144,15 @@ export const createEditPointTemplate = (point) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__reset-btn" type="reset">${(add) ? 'Cancel' : 'Delete'}</button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
       <section class="event__details">
-        ${showAvailableOffers(eventOffers)}
+        ${showAvailableOffers(allOffers.find((offer) => offer.type === eventType).offers)}
 
-        <section class="event__section  event__section--destination">
-          <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">Chamonix-Mont-Blanc (usually shortened to Chamonix) is a resort area near the junction of France, Switzerland and Italy. At the base of Mont Blanc, the highest summit in the Alps, it's renowned for its skiing.</p>
-        </section>
+        ${showDestination(name, description, pictures)}
       </section>
     </form>
   </li>`;

@@ -8,17 +8,17 @@ import { createTripInfoTemplate } from './view/trip-info.js';
 import { createShowPointTemplate } from './view/point.js';
 import { createEditPointTemplate } from './view/point-edit.js';
 // import { createStatsTemplate } from './view/stat.js';
-import { generateEvents, generateOffers } from './mock/points.js';
+import { generateEvents } from './mock/points.js';
 import { sortByKey } from './utils.js';
 
 const POINT_COUNT = 20;
 
-const allOffers = generateOffers();
-console.log(allOffers);
+// const allOffers = generateOffers();
+// console.log(allOffers);
 
 
 const events = new Array(POINT_COUNT).fill().map(generateEvents).sort(sortByKey('dateFrom'));
-console.log(events);
+// console.log(events);
 
 const renderNode = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -35,11 +35,11 @@ const tripEventsNode = mainNode.querySelector('.trip-events');
 // const statsNode = mainNode.querySelector('.page-body__container');
 
 renderNode(navigationNode, createSiteMenuTemplate(), 'beforeend');
-renderNode(tripMainNode, createTripInfoTemplate(), 'afterbegin');
+renderNode(tripMainNode, createTripInfoTemplate(events), 'afterbegin');
 
 const tripInfoNode = headerNode.querySelector('.trip-info');
 
-renderNode(tripInfoNode, createTripCostTemplate(), 'beforeend');
+renderNode(tripInfoNode, createTripCostTemplate(events), 'beforeend');
 renderNode(tripFilterNode, createTripFilterTemplate(), 'beforeend');
 
 renderNode(tripEventsNode, createEventsSortTemplate(), 'beforeend');
@@ -55,3 +55,5 @@ for (let i = 1; i < POINT_COUNT; i++) {
 }
 
 // renderNode(statsNode, createStatsTemplate(), 'beforeend');
+
+// export { allOffers };

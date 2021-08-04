@@ -1,5 +1,6 @@
-import { getRandomInteger, getRandomLengthArray } from '../utils.js';
+import { getBoolean, getRandomInteger, getRandomLengthArray, getRandomValue } from '../utils.js';
 import dayjs from 'dayjs';
+// import { allOffers } from '../main.js';
 
 const EVENT_TYPES = [
   'Taxi',
@@ -63,24 +64,15 @@ const OFFER_MIN_PRICE = 10;
 const OFFER_MAX_PRICE = 200;
 
 
-const getRandomValue = (array) => {
-  const randomIndex = getRandomInteger(0, array.length - 1);
-  return array[randomIndex];
-};
-
 const generateDestination = () => {
   const name = getRandomValue(EVENT_CITIES);
   const description = getRandomLengthArray(DESTINATION_DESCRIPTIONS, getRandomInteger(PHRASE_COUNT_MIN, PHRASE_COUNT_MAX)).join(' ');
+  const pictures = new Array(getRandomInteger(1, 5)).fill().map(() => ({'src': `http://picsum.photos/248/152?r='${Math.random()}`, 'description': `${name} ${getRandomValue(DESTINATION_DESCRIPTIONS)}`}));
 
   return {
     name,
     description,
-    picture: [
-      {
-        src: '',
-        description: '',
-      },
-    ],
+    pictures,
   };
 };
 
@@ -101,7 +93,7 @@ const generateDate = () => {
 export const generateOffers = () => EVENT_TYPES.map(
   (value) => (
     {'type': value,
-      'offers': new Array(getRandomInteger(0, 6)).fill().map(
+      'offers': new Array(getRandomInteger(0, 5)).fill().map(
         () =>
           ({
             'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)],
@@ -111,40 +103,39 @@ export const generateOffers = () => EVENT_TYPES.map(
     }),
 );
 
-// console.log(generateOffers());
-// const allOffers = generateOffers();
+const allOffers = generateOffers();
 
 // const generateOffers = () => new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
 
-const getSelectedOffers = () => {
-  const offers = new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
+// const getSelectedOffers = () => {
+//   const offers = new Array(getRandomInteger(0, 4)).fill().map(() => ({'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}));
 
-  const uniqueOffers = offers.reduce((acc, offer) => acc.map[offer.title] ? acc : ((acc.map[offer.title] = true), acc.uniqueOffers.push(offer), acc), {
-    map: {},
-    uniqueOffers: [],
-  }).uniqueOffers;
-  return uniqueOffers;
-};
-
-// const getOffers = (type, offers) => {
-//   const allTypeOffers = (offers.find((offer) => offer.type === type)).offers;
-//   console.log(allTypeOffers);
-//   return allTypeOffers.slice(0, getRandomInteger(0, allTypeOffers.length - 1));
+//   const uniqueOffers = offers.reduce((acc, offer) => acc.map[offer.title] ? acc : ((acc.map[offer.title] = true), acc.uniqueOffers.push(offer), acc), {
+//     map: {},
+//     uniqueOffers: [],
+//   }).uniqueOffers;
+//   return uniqueOffers;
 // };
-// console.log(getOffers('Bus', allOffers));
 
+const getOffers = (type, offers) => {
+  const allTypeOffers = (offers.find((offer) => offer.type === type)).offers;
+  // console.log(allTypeOffers);
+  return allTypeOffers.slice(0, getRandomInteger(0, allTypeOffers.length - 1));
+};
+console.log(getOffers('Taxi', allOffers));
+console.log(allOffers[0].offers);
 
 export const generateEvents = () => {
   const eventType = getRandomValue(EVENT_TYPES);
-  const isFavorite = Boolean(getRandomInteger(0, 1));
+  const isFavorite = getBoolean(getRandomInteger(0, 1));
 
   const dates = generateDate();
   const dateFrom = Math.min(...dates);
   const dateTo = Math.max(...dates);
   const basePrice = getRandomInteger(COST_MIN, COST_MAX);
   const destination = generateDestination();
-  const eventOffers = getSelectedOffers();
-  // const eventOffers = getOffers(eventType, offers);
+  // const eventOffers = getSelectedOffers();
+  const eventOffers = getOffers(eventType, allOffers);
   // console.log(eventOffers);
   return {
     basePrice,
@@ -157,3 +148,5 @@ export const generateEvents = () => {
     eventType,
   };
 };
+
+export { allOffers };
