@@ -1,6 +1,5 @@
 import { getBoolean, getRandomInteger, getRandomLengthArray, getRandomValue } from '../utils.js';
 import dayjs from 'dayjs';
-// import { allOffers } from '../main.js';
 
 const EVENT_TYPES = [
   'Taxi',
@@ -87,9 +86,6 @@ const generateDate = () => {
   ];
 };
 
-// const generateOffers = () => new Array(EVENT_TYPES.length).fill().map((index) => ({'type': EVENT_TYPES[index], 'offers': [{'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)], 'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE)}]}));
-
-
 export const generateOffers = () => EVENT_TYPES.map(
   (value) => (
     {'type': value,
@@ -117,26 +113,37 @@ const allOffers = generateOffers();
 //   return uniqueOffers;
 // };
 
-const getOffers = (type, offers) => {
-  const allTypeOffers = (offers.find((offer) => offer.type === type)).offers;
-  // console.log(allTypeOffers);
-  return allTypeOffers.slice(0, getRandomInteger(0, allTypeOffers.length - 1));
-};
-console.log(getOffers('Taxi', allOffers));
-console.log(allOffers[0].offers);
+// const getOffers = (type, offers) => {
+//   const allTypeOffers = (offers.find((offer) => offer.type === type)).offers;
+//   // console.log(allTypeOffers);
+//   return allTypeOffers.slice(0, getRandomInteger(0, allTypeOffers.length - 1));
+// };
 
-export const generateEvents = () => {
+const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type === type)).offers;
+
+const getSelectedOffers = (type, offers) => {
+  const availableOffers = getAvailableOffers(type, offers);
+  return availableOffers.slice(0, getRandomInteger(0, availableOffers.length));
+};
+
+
+const eventsDataHelper = () => {
   const eventType = getRandomValue(EVENT_TYPES);
   const isFavorite = getBoolean(getRandomInteger(0, 1));
-
   const dates = generateDate();
   const dateFrom = Math.min(...dates);
   const dateTo = Math.max(...dates);
   const basePrice = getRandomInteger(COST_MIN, COST_MAX);
   const destination = generateDestination();
-  // const eventOffers = getSelectedOffers();
-  const eventOffers = getOffers(eventType, allOffers);
-  // console.log(eventOffers);
+  const eventOffers = getSelectedOffers(eventType, allOffers);
+  return [eventType, isFavorite, dateFrom, dateTo, basePrice, destination, eventOffers];
+};
+
+// console.log(eventsDataHelper());
+
+export const generateEvents = () => {
+  const [ eventType, isFavorite, dateFrom, dateTo, basePrice, destination, eventOffers ] = eventsDataHelper();
+
   return {
     basePrice,
     dateFrom,
@@ -149,4 +156,4 @@ export const generateEvents = () => {
   };
 };
 
-export { allOffers };
+export { allOffers, getAvailableOffers };

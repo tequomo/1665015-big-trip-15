@@ -13,12 +13,9 @@ import { sortByKey } from './utils.js';
 
 const POINT_COUNT = 20;
 
-// const allOffers = generateOffers();
-// console.log(allOffers);
-
 
 const events = new Array(POINT_COUNT).fill().map(generateEvents).sort(sortByKey('dateFrom'));
-// console.log(events);
+console.log(events);
 
 const renderNode = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -55,5 +52,3 @@ for (let i = 1; i < POINT_COUNT; i++) {
 }
 
 // renderNode(statsNode, createStatsTemplate(), 'beforeend');
-
-// export { allOffers };
