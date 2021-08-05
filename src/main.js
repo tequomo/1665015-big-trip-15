@@ -9,7 +9,7 @@ import { createShowPointTemplate } from './view/point.js';
 import { createAddEditPointTemplate } from './view/point-add-edit.js';
 // import { createStatsTemplate } from './view/stat.js';
 import { generateEvents } from './mock/points.js';
-import { sortByKey } from './utils.js';
+import { sortByKey } from './utils/utils.js';
 
 const POINT_COUNT = 20;
 

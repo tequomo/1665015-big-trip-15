@@ -1,15 +1,8 @@
-import dayjs from 'dayjs';
+// import dayjs from 'dayjs';
+import { getDuration, showPointDataHelper } from '../utils/common.js';
 
-const getDuration = (start, end) => {
-  const diffInMinutes = (dayjs(end)).diff(dayjs(start), 'minutes');
-  const hours = Math.floor(diffInMinutes / 60);
-  const minutes = diffInMinutes - (hours * 60);
-  const days = Math.floor(hours / 24);
 
-  return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
-};
-
-const showOffers = (offers) => ((offers.length !== 0) ? (`<h4 class="visually-hidden">Offers:</h4>
+const showOffers = (offers) => `<h4 class="visually-hidden">Offers:</h4>
   <ul class="event__selected-offers">
   ${offers.map((offer) =>
     `<li class="event__offer">
@@ -17,18 +10,8 @@ const showOffers = (offers) => ((offers.length !== 0) ? (`<h4 class="visually-hi
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
   </li>`).join('\n')}
-  </ul>`) : '');
+  </ul>`;
 
-const showPointDataHelper = (dateFrom, dateTo) => {
-  const eventDate = dayjs(dateFrom).format('YYYY-MM-DD');
-  const shortEventDate = dayjs(dateFrom).format('MMM DD');
-  const startTime = dayjs(dateFrom).format('YYYY-MM-DD[T]HH:mm');
-  const shortStartTime = dayjs(dateFrom).format('HH:mm');
-  const endTime = dayjs(dateTo).format('YYYY-MM-DD[T]HH:mm');
-  const shortEndTime = dayjs(dateTo).format('HH:mm');
-
-  return [eventDate, shortEventDate, startTime, shortStartTime, endTime, shortEndTime];
-};
 
 export const createShowPointTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, eventType, isFavorite, eventOffers, destination: { name } } = point;
@@ -52,7 +35,7 @@ export const createShowPointTemplate = (point) => {
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
       </p>
-      ${showOffers(eventOffers)}
+      ${eventOffers.length !== 0 ? showOffers(eventOffers) : ''}
       <button class="event__favorite-btn ${(isFavorite) ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>
         <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">

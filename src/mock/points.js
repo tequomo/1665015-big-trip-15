@@ -1,4 +1,4 @@
-import { getBoolean, getRandomInteger, getRandomLengthArray, getRandomValue } from '../utils.js';
+import { getBoolean, getRandomInteger, getRandomLengthArray, getRandomValue } from '../utils/utils.js';
 import dayjs from 'dayjs';
 
 const EVENT_TYPES = [
