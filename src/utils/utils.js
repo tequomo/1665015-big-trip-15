@@ -1,3 +1,31 @@
+export const RenderPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+};
+
+export const renderNode = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
+export const renderTemplate = (container, template, place) => {
+  container.insertAdjacentHTML(place, template);
+};
+
+export const createNode = (template) => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = template;
+
+  return wrapper.firstChild;
+};
+
+
 export const getRandomInteger = (min, max) => {
   const rand = min + Math.random() * (max + 1 - min);
   return Math.floor(rand);
