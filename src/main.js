@@ -1,15 +1,15 @@
 // import { createAddNewPointTemplate } from './view/point-add.js';
 import { createEventsListTemplate } from './view/events-list.js';
 import { createTripFilterTemplate } from './view/filter.js';
-import {createSiteMenuTemplate} from './view/site-menu.js';
+import SiteMenuView from './view/site-menu.js';
 import { createEventsSortTemplate } from './view/sort.js';
-import { createTripCostTemplate } from './view/trip-info-cost.js';
-import { createTripInfoTemplate } from './view/trip-info.js';
+import TripInfoCostView from './view/trip-info-cost.js';
+import TripInfoView from './view/trip-info.js';
 import { createShowPointTemplate } from './view/point.js';
 import { createAddEditPointTemplate } from './view/point-add-edit.js';
 // import { createStatsTemplate } from './view/stat.js';
 import { generateEvents } from './mock/points.js';
-import { renderTemplate, sortByKey } from './utils/utils.js';
+import { renderNode, renderTemplate, RenderPosition, sortByKey } from './utils/utils.js';
 
 const POINT_COUNT = 20;
 
@@ -27,12 +27,13 @@ const tripFilterNode = headerNode.querySelector('.trip-controls__filters');
 const tripEventsNode = mainNode.querySelector('.trip-events');
 // const statsNode = mainNode.querySelector('.page-body__container');
 
-renderTemplate(navigationNode, createSiteMenuTemplate(), 'beforeend');
-renderTemplate(tripMainNode, createTripInfoTemplate(events), 'afterbegin');
+// renderTemplate(navigationNode, createSiteMenuTemplate(), 'beforeend');
+renderNode(navigationNode, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
+renderNode(tripMainNode, new TripInfoView(events).getElement(), RenderPosition.AFTERBEGIN);
 
 const tripInfoNode = headerNode.querySelector('.trip-info');
 
-renderTemplate(tripInfoNode, createTripCostTemplate(events), 'beforeend');
+renderNode(tripInfoNode, new TripInfoCostView(events).getElement(), RenderPosition.BEFOREEND);
 renderTemplate(tripFilterNode, createTripFilterTemplate(), 'beforeend');
 
 renderTemplate(tripEventsNode, createEventsSortTemplate(), 'beforeend');
