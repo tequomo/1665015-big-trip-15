@@ -1,5 +1,6 @@
 // import dayjs from 'dayjs';
 import { getDuration, showPointDataHelper } from '../utils/common.js';
+import { createElement } from '../utils/utils.js';
 
 
 const showOffers = (offers) => `<h4 class="visually-hidden">Offers:</h4>
@@ -13,7 +14,7 @@ const showOffers = (offers) => `<h4 class="visually-hidden">Offers:</h4>
   </ul>`;
 
 
-export const createShowPointTemplate = (point) => {
+const createShowPointTemplate = (point) => {
   const { basePrice, dateFrom, dateTo, eventType, isFavorite, eventOffers, destination: { name } } = point;
   const [eventDate, shortEventDate, startTime, shortStartTime, endTime, shortEndTime] = showPointDataHelper(dateFrom, dateTo);
 
@@ -48,3 +49,27 @@ export const createShowPointTemplate = (point) => {
     </div>
   </li>`;
 };
+
+
+export default class Point {
+  constructor(point) {
+    this._element = null;
+    this._point = point;
+  }
+
+  getTemplate() {
+    return createShowPointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

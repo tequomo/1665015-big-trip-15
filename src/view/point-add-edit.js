@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { allOffers, getAvailableOffers } from '../mock/points.js';
+import { createElement } from '../utils/utils.js';
 
 
 const showOffers = (availableOffers, selectedOffers) =>
@@ -29,7 +30,7 @@ const showDestination = ({description = '', pictures = ''}) =>
     </div>` : ''}
   </section>`;
 
-export const createAddEditPointTemplate = (point = {}, edited = false) => {
+const createAddEditPointTemplate = (point = {}, isEdited = false) => {
   const {basePrice = '', dateFrom = dayjs(), dateTo = dayjs(), eventType = 'Flight', eventOffers = [], destination = {}} = point;
 
   return `<li class="trip-events__item">
@@ -128,8 +129,8 @@ export const createAddEditPointTemplate = (point = {}, edited = false) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${(edited) ? 'Delete' : 'Cancel'}</button>
-        ${(edited) ? `<button class="event__rollup-btn" type="button">
+        <button class="event__reset-btn" type="reset">${(isEdited) ? 'Delete' : 'Cancel'}</button>
+        ${(isEdited) ? `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>` : ''}
       </header>
@@ -141,3 +142,27 @@ export const createAddEditPointTemplate = (point = {}, edited = false) => {
     </form>
   </li>`;
 };
+
+export default class PointAddEdit {
+  constructor(point, isEdited) {
+    this._element = null;
+    this._point = point;
+    this._isEdited = isEdited;
+  }
+
+  getTemplate() {
+    return createAddEditPointTemplate(this._point, this._isEdited);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

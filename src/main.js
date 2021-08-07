@@ -1,51 +1,64 @@
-// import { createAddNewPointTemplate } from './view/point-add.js';
-import { createEventsListTemplate } from './view/events-list.js';
-import { createTripFilterTemplate } from './view/filter.js';
+import EventsListView from './view/events-list.js';
+import FilterView from './view/filter.js';
 import SiteMenuView from './view/site-menu.js';
-import { createEventsSortTemplate } from './view/sort.js';
-import TripInfoCostView from './view/trip-info-cost.js';
+import SortView from './view/sort.js';
 import TripInfoView from './view/trip-info.js';
-import { createShowPointTemplate } from './view/point.js';
-import { createAddEditPointTemplate } from './view/point-add-edit.js';
-// import { createStatsTemplate } from './view/stat.js';
+import PointView from './view/point.js';
+import PointAddEditView from './view/point-add-edit.js';
+// import MessageView from './view/message.js';
+// import StatView from './view/stat.js';
 import { generateEvents } from './mock/points.js';
-import { renderNode, renderTemplate, RenderPosition, sortByKey } from './utils/utils.js';
+import { render, RenderPosition, sortByKey } from './utils/utils.js';
 
 const POINT_COUNT = 20;
-
 
 const events = new Array(POINT_COUNT).fill().map(generateEvents).sort(sortByKey('dateFrom'));
 
 
-const bodyNode = document.querySelector('.page-body');
-const headerNode = bodyNode.querySelector('.page-header');
-const mainNode = bodyNode.querySelector('.page-main');
+const bodyElement = document.querySelector('.page-body');
+const headerElement = bodyElement.querySelector('.page-header');
+const mainElement = bodyElement.querySelector('.page-main');
 
-const navigationNode = headerNode.querySelector('.trip-controls__navigation');
-const tripMainNode = headerNode.querySelector('.trip-main');
-const tripFilterNode = headerNode.querySelector('.trip-controls__filters');
-const tripEventsNode = mainNode.querySelector('.trip-events');
-// const statsNode = mainNode.querySelector('.page-body__container');
+const navigationElement = headerElement.querySelector('.trip-controls__navigation');
+const tripMainElement = headerElement.querySelector('.trip-main');
+const tripFilterElement = headerElement.querySelector('.trip-controls__filters');
+const tripEventsElement = mainElement.querySelector('.trip-events');
+// const statsElement = mainElement.querySelector('.page-body__container');
 
-// renderTemplate(navigationNode, createSiteMenuTemplate(), 'beforeend');
-renderNode(navigationNode, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
-renderNode(tripMainNode, new TripInfoView(events).getElement(), RenderPosition.AFTERBEGIN);
+const renderPoints = (containerElement, point) => {
+  const pointComponent = new PointView(point);
+  const pointAddEditComponent = new PointAddEditView(point);
 
-const tripInfoNode = headerNode.querySelector('.trip-info');
+  const replacePointToEditForm =() => {
+    containerElement.replaceChild(pointAddEditComponent.getElement(),pointComponent.getElement());
+  };
 
-renderNode(tripInfoNode, new TripInfoCostView(events).getElement(), RenderPosition.BEFOREEND);
-renderTemplate(tripFilterNode, createTripFilterTemplate(), 'beforeend');
+  const replaceEditFormToPoint =() => {
+    containerElement.replaceChild(pointComponent.getElement(), pointAddEditComponent.getElement());
+  };
 
-renderTemplate(tripEventsNode, createEventsSortTemplate(), 'beforeend');
-renderTemplate(tripEventsNode, createEventsListTemplate(), 'beforeend');
+  pointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => replacePointToEditForm());
 
-const tripEventsListNode = tripEventsNode.querySelector('.trip-events__list');
+  pointAddEditComponent.getElement().querySelector('form').addEventListener('submit', () => replaceEditFormToPoint());
 
-renderTemplate(tripEventsListNode, createAddEditPointTemplate(events[0], true), 'beforeend');
-// renderTemplate(tripEventsListNode, createAddNewPointTemplate(), 'beforeend');
+  render(containerElement, pointComponent.getElement(), RenderPosition.BEFOREEND);
+};
 
-for (let i = 1; i < POINT_COUNT; i++) {
-  renderTemplate(tripEventsListNode, createShowPointTemplate(events[i]), 'beforeend');
+render(navigationElement, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
+
+if (events.length !== 0) {
+  render(tripMainElement, new TripInfoView(events).getElement(), RenderPosition.AFTERBEGIN);
 }
 
-// renderTemplate(statsNode, createStatsTemplate(), 'beforeend');
+render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
+
+render(tripEventsElement, new SortView().getElement(), RenderPosition.BEFOREEND);
+
+const eventsListComponent = new EventsListView();
+render(tripEventsElement, eventsListComponent.getElement(), RenderPosition.BEFOREEND);
+
+for (let i = 1; i < POINT_COUNT; i++) {
+  renderPoints(eventsListComponent.getElement(), events[i]);
+}
+
+// render(statsElement, new StatView().getElement(), RenderPosition.BEFOREEND);

@@ -1,4 +1,4 @@
-import { createNode } from '../utils/utils.js';
+import { createElement } from '../utils/utils.js';
 
 const createSiteMenuTemplate = () => (
   `<nav class="trip-controls__trip-tabs  trip-tabs">
@@ -8,7 +8,7 @@ const createSiteMenuTemplate = () => (
 
 export default class SiteMenu {
   constructor() {
-    this._node = null;
+    this._element = null;
   }
 
   getTemplate() {
@@ -16,14 +16,14 @@ export default class SiteMenu {
   }
 
   getElement() {
-    if (!this._node) {
-      this._node = createNode(this.getTemplate());
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
     }
 
-    return this._node;
+    return this._element;
   }
 
   removeElement() {
-    this._node = null;
+    this._element = null;
   }
 }
