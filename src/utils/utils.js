@@ -45,3 +45,5 @@ export const getRandomValue = (array) => array[getRandomInteger(0, array.length 
 export const sortByKey = (key) => (a, b) => a[key] > b[key] ? 1 : -1;
 
 export const getBoolean = () => Boolean(getRandomInteger(0, 1));
+
+export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';

@@ -2,11 +2,11 @@ import dayjs from 'dayjs';
 
 const SHOWN_POINTS = 3;
 
-// const messages = {
-//   'Everything': 'Click New Event to create your first point',
-//   'Past': 'There are no past events now',
-//   'Future': 'There are no future events now',
-// };
+const messages = {
+  'Everything': 'Click New Event to create your first point',
+  'Past': 'There are no past events now',
+  'Future': 'There are no future events now',
+};
 
 export const getDuration = (start, end) => {
   const diffInMinutes = (dayjs(end)).diff(dayjs(start), 'minutes');
@@ -53,4 +53,4 @@ export const getTotalCost = (points) => (
     ), 0)
 );
 
-// export const showMessage = (filter) => messages.filter;
+export const showMessage = (filterState) => messages[filterState];
