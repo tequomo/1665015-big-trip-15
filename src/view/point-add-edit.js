@@ -32,6 +32,7 @@ const showDestination = ({description = '', pictures = ''}) =>
 
 const createAddEditPointTemplate = (point = {}, isEdited = false) => {
   const {basePrice = '', dateFrom = dayjs(), dateTo = dayjs(), eventType = 'Flight', eventOffers = [], destination = {}} = point;
+  const allPointOffers = getAvailableOffers(eventType, allOffers);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -135,16 +136,16 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
         </button>` : ''}
       </header>
       <section class="event__details">
-        ${getAvailableOffers(eventType, allOffers).length !== 0 ? showOffers(getAvailableOffers(eventType, allOffers), eventOffers) : ''}
+        ${allPointOffers.length && showOffers(allPointOffers, eventOffers) || ''}
 
-        ${Object.keys(destination).length !== 0 ? showDestination(destination) : ''}
+        ${Object.keys(destination).length && showDestination(destination) || ''}
       </section>
     </form>
   </li>`;
 };
 
 export default class PointAddEdit {
-  constructor(point, isEdited) {
+  constructor(point = {}, isEdited = false) {
     this._element = null;
     this._point = point;
     this._isEdited = isEdited;

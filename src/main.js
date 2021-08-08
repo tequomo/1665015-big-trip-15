@@ -25,9 +25,9 @@ const tripFilterElement = headerElement.querySelector('.trip-controls__filters')
 const tripEventsElement = mainElement.querySelector('.trip-events');
 // const statsElement = mainElement.querySelector('.page-body__container');
 
-const renderPoints = (containerElement, point) => {
+const renderPoint = (containerElement, point) => {
   const pointComponent = new PointView(point);
-  const pointAddEditComponent = new PointAddEditView(point);
+  const pointAddEditComponent = new PointAddEditView(point, true);
 
   const replacePointToEditForm =() => {
     containerElement.replaceChild(pointAddEditComponent.getElement(),pointComponent.getElement());
@@ -58,7 +58,7 @@ const eventsListComponent = new EventsListView();
 render(tripEventsElement, eventsListComponent.getElement(), RenderPosition.BEFOREEND);
 
 for (let i = 1; i < POINT_COUNT; i++) {
-  renderPoints(eventsListComponent.getElement(), events[i]);
+  renderPoint(eventsListComponent.getElement(), events[i]);
 }
 
 // render(statsElement, new StatView().getElement(), RenderPosition.BEFOREEND);
