@@ -29,10 +29,11 @@ export const showPointDataHelper = (dateFrom, dateTo) => {
 };
 
 export const getTrevelTime = (points) => {
-  const startDate = dayjs(points[0].dateFrom).format('MMM DD');
-  const endDateRaw = dayjs([...points].pop().dateTo).format('MMM DD');
+  const startDateRaw = dayjs(points[0].dateFrom);
+  const endDateRaw = dayjs([...points].pop().dateTo);
+  const startDate = dayjs(startDateRaw).format('MMM DD');
   const endDate = (
-    dayjs(startDate).month() === dayjs(endDateRaw).month() ?
+    dayjs(startDateRaw).month() === dayjs(endDateRaw).month() ?
       dayjs(endDateRaw).format('DD') : dayjs(endDateRaw).format('MMM DD')
   );
   return `${startDate}&nbsp;&mdash;&nbsp;${endDate}`;
