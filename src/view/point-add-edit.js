@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { allOffers, getAvailableOffers } from '../mock/points.js';
-import { createElement } from '../utils/utils.js';
+import AbstractView from './abstract.js';
 
 
 const showOffers = (availableOffers, selectedOffers) =>
@@ -144,26 +144,35 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
   </li>`;
 };
 
-export default class PointAddEdit {
+export default class PointAddEdit extends AbstractView {
   constructor(point = {}, isEdited = false) {
-    this._element = null;
+    super();
     this._point = point;
     this._isEdited = isEdited;
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._buttonClickHandler = this._buttonClickHandler.bind(this);
   }
 
   getTemplate() {
     return createAddEditPointTemplate(this._point, this._isEdited);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
   }
 
-  removeElement() {
-    this._element = null;
+  _buttonClickHandler() {
+    this._callback._buttonClick();
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+  }
+
+  setButtonClickHandler(callback) {
+    this._callback._buttonClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._buttonClickHandler);
   }
 }
