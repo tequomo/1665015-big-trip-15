@@ -1,8 +1,8 @@
-// import { showMessage } from '../utils/common.js';
+import { showMessage } from '../utils/common.js';
 import { createElement } from '../utils/utils.js';
 
 const createMessageTemplate = () => (
-  `<p class="trip-events__msg">Click New Event to create your first point
+  `<p class="trip-events__msg">${showMessage('Everything')}
   </p>`
 );
 

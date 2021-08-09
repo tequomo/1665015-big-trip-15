@@ -5,10 +5,10 @@ import SortView from './view/sort.js';
 import TripInfoView from './view/trip-info.js';
 import PointView from './view/point.js';
 import PointAddEditView from './view/point-add-edit.js';
-// import MessageView from './view/message.js';
+import MessageView from './view/message.js';
 // import StatView from './view/stat.js';
 import { generateEvents } from './mock/points.js';
-import { render, RenderPosition, sortByKey } from './utils/utils.js';
+import { isEscEvent, render, RenderPosition, sortByKey } from './utils/utils.js';
 
 const POINT_COUNT = 20;
 
@@ -25,6 +25,7 @@ const tripFilterElement = headerElement.querySelector('.trip-controls__filters')
 const tripEventsElement = mainElement.querySelector('.trip-events');
 // const statsElement = mainElement.querySelector('.page-body__container');
 
+
 const renderPoint = (containerElement, point) => {
   const pointComponent = new PointView(point);
   const pointAddEditComponent = new PointAddEditView(point, true);
@@ -37,9 +38,29 @@ const renderPoint = (containerElement, point) => {
     containerElement.replaceChild(pointComponent.getElement(), pointAddEditComponent.getElement());
   };
 
-  pointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => replacePointToEditForm());
+  const onEscCloseEdit = (evt) => {
+    if (isEscEvent(evt)) {
+      evt.preventDefault();
+      replaceEditFormToPoint();
+      document.removeEventListener('keydown', onEscCloseEdit);
+    }
+  };
 
-  pointAddEditComponent.getElement().querySelector('form').addEventListener('submit', () => replaceEditFormToPoint());
+  pointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replacePointToEditForm();
+    document.addEventListener('keydown', onEscCloseEdit);
+  });
+
+  pointAddEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceEditFormToPoint();
+    document.removeEventListener('keydown', onEscCloseEdit);
+  });
+
+  pointAddEditComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceEditFormToPoint();
+    document.removeEventListener('keydown', onEscCloseEdit);
+  });
 
   render(containerElement, pointComponent.getElement(), RenderPosition.BEFOREEND);
 };
@@ -52,13 +73,19 @@ if (events.length !== 0) {
 
 render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
 
+
 render(tripEventsElement, new SortView().getElement(), RenderPosition.BEFOREEND);
 
 const eventsListComponent = new EventsListView();
 render(tripEventsElement, eventsListComponent.getElement(), RenderPosition.BEFOREEND);
 
-for (let i = 1; i < POINT_COUNT; i++) {
-  renderPoint(eventsListComponent.getElement(), events[i]);
+if (!events.length) {
+  render(tripEventsElement, new MessageView().getElement(), RenderPosition.BEFOREEND);
+}
+else {
+  for (let i = 1; i < POINT_COUNT; i++) {
+    renderPoint(eventsListComponent.getElement(), events[i]);
+  }
 }
 
 // render(statsElement, new StatView().getElement(), RenderPosition.BEFOREEND);
