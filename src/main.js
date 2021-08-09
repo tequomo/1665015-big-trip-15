@@ -8,7 +8,8 @@ import PointAddEditView from './view/point-add-edit.js';
 import MessageView from './view/message.js';
 // import StatView from './view/stat.js';
 import { generateEvents } from './mock/points.js';
-import { isEscEvent, render, RenderPosition, sortByKey } from './utils/utils.js';
+import { isEscEvent, sortByKey } from './utils/utils.js';
+import { render, RenderPosition, replace } from './utils/render.js';
 
 const POINT_COUNT = 20;
 
@@ -31,11 +32,11 @@ const renderPoint = (containerElement, point) => {
   const pointAddEditComponent = new PointAddEditView(point, true);
 
   const replacePointToEditForm =() => {
-    containerElement.replaceChild(pointAddEditComponent.getElement(),pointComponent.getElement());
+    replace(pointAddEditComponent, pointComponent);
   };
 
   const replaceEditFormToPoint =() => {
-    containerElement.replaceChild(pointComponent.getElement(), pointAddEditComponent.getElement());
+    replace(pointComponent, pointAddEditComponent);
   };
 
   const onEscCloseEdit = (evt) => {
@@ -61,30 +62,36 @@ const renderPoint = (containerElement, point) => {
     document.removeEventListener('keydown', onEscCloseEdit);
   });
 
-  render(containerElement, pointComponent.getElement(), RenderPosition.BEFOREEND);
+  render(containerElement, pointComponent, RenderPosition.BEFOREEND);
 };
 
-render(navigationElement, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
+const renderHeader = (points) => {
+  render(navigationElement, new SiteMenuView, RenderPosition.BEFOREEND);
 
-if (events.length !== 0) {
-  render(tripMainElement, new TripInfoView(events).getElement(), RenderPosition.AFTERBEGIN);
-}
-
-render(tripFilterElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
-
-
-render(tripEventsElement, new SortView().getElement(), RenderPosition.BEFOREEND);
-
-const eventsListComponent = new EventsListView();
-render(tripEventsElement, eventsListComponent.getElement(), RenderPosition.BEFOREEND);
-
-if (!events.length) {
-  render(tripEventsElement, new MessageView().getElement(), RenderPosition.BEFOREEND);
-}
-else {
-  for (let i = 1; i < POINT_COUNT; i++) {
-    renderPoint(eventsListComponent.getElement(), events[i]);
+  if (points.length !== 0) {
+    render(tripMainElement, new TripInfoView(points), RenderPosition.AFTERBEGIN);
   }
-}
 
-// render(statsElement, new StatView().getElement(), RenderPosition.BEFOREEND);
+  render(tripFilterElement, new FilterView, RenderPosition.BEFOREEND);
+};
+
+const renderBoard = (points) => {
+  const eventsListComponent = new EventsListView();
+
+  render(tripEventsElement, new SortView, RenderPosition.BEFOREEND);
+  render(tripEventsElement, eventsListComponent, RenderPosition.BEFOREEND);
+
+  if (!points.length) {
+    render(tripEventsElement, new MessageView, RenderPosition.BEFOREEND);
+  }
+  else {
+    for (let i = 1; i < POINT_COUNT; i++) {
+      renderPoint(eventsListComponent, points[i]);
+    }
+  }
+};
+
+renderHeader(events);
+renderBoard(events);
+
+// render(statsElement, new StatView(), RenderPosition.BEFOREEND);
