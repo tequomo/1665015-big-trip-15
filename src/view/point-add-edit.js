@@ -163,7 +163,7 @@ export default class PointAddEdit extends AbstractView {
   }
 
   _buttonClickHandler() {
-    this._callback._buttonClick();
+    this._callback.buttonClick();
   }
 
   setFormSubmitHandler(callback) {
@@ -172,7 +172,7 @@ export default class PointAddEdit extends AbstractView {
   }
 
   setButtonClickHandler(callback) {
-    this._callback._buttonClick = callback;
+    this._callback.buttonClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._buttonClickHandler);
   }
 }

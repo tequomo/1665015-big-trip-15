@@ -25,9 +25,19 @@ export default class Filter extends AbstractView {
   constructor(points) {
     super();
     this._points = points;
+    // this._radioChangeHandler = this._radioChangeHandler.bind(this);
   }
 
   getTemplate() {
     return createTripFilterTemplate(this._points);
   }
+
+  // _radioChangeHandler() {
+  //   this._callback.radioChange();
+  // }
+
+  // setRadioChangeHandler(callback) {
+  //   this._callback.radioChange = callback;
+  //   this.getElement().querySelector('form').addEventListener('change', this._radioChangeHandler);
+  // }
 }

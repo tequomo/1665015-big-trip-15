@@ -10,6 +10,7 @@ import MessageView from './view/message.js';
 import { generateEvents } from './mock/points.js';
 import { isEscEvent, sortByKey } from './utils/utils.js';
 import { render, RenderPosition, replace } from './utils/render.js';
+// import { getFilter } from './utils/common.js';
 
 const POINT_COUNT = 20;
 
@@ -66,13 +67,17 @@ const renderPoint = (containerElement, point) => {
 };
 
 const renderHeader = (points) => {
+  const filterComponent = new FilterView(points);
+
   render(navigationElement, new SiteMenuView, RenderPosition.BEFOREEND);
 
   if (points.length !== 0) {
     render(tripMainElement, new TripInfoView(points), RenderPosition.AFTERBEGIN);
   }
 
-  render(tripFilterElement, new FilterView, RenderPosition.BEFOREEND);
+  // filterComponent.setRadioChangeHandler((evt) => points.filter(getFilter[evt.target.value]));
+
+  render(tripFilterElement, filterComponent, RenderPosition.BEFOREEND);
 };
 
 const renderBoard = (points) => {

@@ -8,6 +8,12 @@ const messages = {
   'Future': 'There are no future events now',
 };
 
+export const getFilter = {
+  everything: (point) => point === point,
+  future: (point) => point.dateFrom >= dayjs(),
+  past: (point) => (point.dateFrom < dayjs()) || (point.dateFrom > dayjs() > point.dateTo),
+};
+
 export const getDuration = (start, end) => {
   const diffInMinutes = (dayjs(end)).diff(dayjs(start), 'minutes');
   const hours = Math.floor(diffInMinutes / 60);
