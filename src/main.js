@@ -80,7 +80,7 @@ const renderHeader = (points) => {
   render(tripFilterElement, filterComponent, RenderPosition.BEFOREEND);
 };
 
-const renderBoard = (points) => {
+const renderTrip = (points) => {
   const eventsListComponent = new EventsListView();
 
   render(tripEventsElement, new SortView, RenderPosition.BEFOREEND);
@@ -97,6 +97,6 @@ const renderBoard = (points) => {
 };
 
 renderHeader(events);
-renderBoard(events);
+renderTrip(events);
 
 // render(statsElement, new StatView(), RenderPosition.BEFOREEND);
