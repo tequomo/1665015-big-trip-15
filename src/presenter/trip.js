@@ -76,8 +76,8 @@ export default class Trip {
       this._renderNoPoint();
     }
     else {
-      // for (let i = 1; i < POINT_COUNT; i++) {
-      //   this._renderPoint(this._eventsListComponent, points[i]);
+      // for (let i = 1; i < points.length; i++) {
+      //   this._renderPoint(points[i]);
       // }
       points.forEach((point) => this._renderPoint(point));
     }
