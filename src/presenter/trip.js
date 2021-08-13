@@ -1,42 +1,30 @@
-import EventsListView from './view/events-list.js';
-import FilterView from './view/filter.js';
-import SiteMenuView from './view/site-menu.js';
-import SortView from './view/sort.js';
-import TripInfoView from './view/trip-info.js';
-import PointView from './view/point.js';
-import PointAddEditView from './view/point-add-edit.js';
-import MessageView from './view/message.js';
-// import StatView from './view/stat.js';
-import { isEscEvent } from './utils/utils.js';
-import { render, RenderPosition, replace } from './utils/render.js';
-import { getFilter } from './utils/common.js';
-
-const POINT_COUNT = 20;
+import EventsListView from '../view/events-list.js';
+import SortView from '../view/sort.js';
+import PointView from '../view/point.js';
+import PointAddEditView from '../view/point-add-edit.js';
+import MessageView from '../view/message.js';
+import { isEscEvent } from '../utils/utils.js';
+import { render, RenderPosition, replace } from '../utils/render.js';
 
 export default class Trip {
-  constructor (siteMenuContainer, filterContainer, tripEventsContainer, tripInfoContainer) {
-    //  tripFilterElement
-    this._filterContainer = filterContainer;
-    //  tripEventsElement
+  constructor (tripEventsContainer) {
     this._tripEventsContainer = tripEventsContainer;
-    //  tripMainElement
-    this._tripInfoContainer = tripInfoContainer;
-    //  navigationElement
-    this._siteMenuContainer = siteMenuContainer;
 
-    this._siteMenuComponent = new SiteMenuView();
-    this._filterComponent = new FilterView();
     this._sortComponent = new SortView();
     this._eventsListComponent = new EventsListView();
     this._messageComponent = new MessageView();
-
   }
 
-  init  () {
+  init(points) {
+    this._points = points.slice();
 
+    render(this._tripEventsContainer, this._sortComponent, RenderPosition.BEFOREEND);
+    render(this._tripEventsContainer, this._eventsListComponent, RenderPosition.BEFOREEND);
+
+    this._renderTrip(this._points);
   }
 
-  _renderPoint (containerElement, point) {
+  _renderPoint (point) {
     const pointComponent = new PointView(point);
     const pointAddEditComponent = new PointAddEditView(point, true);
 
@@ -71,31 +59,11 @@ export default class Trip {
       document.removeEventListener('keydown', onEscCloseEdit);
     });
 
-    render(containerElement, pointComponent, RenderPosition.BEFOREEND);
+    render(this._eventsListComponent, pointComponent, RenderPosition.BEFOREEND);
   }
 
-  // _renderSiteMenu() {
-  //   render(navigationElement, this._siteMenuComponent, RenderPosition.BEFOREEND);
-  // }
-
-  _renderNoPoint(points) {
-    if (points.length !== 0) {
-      render(this._tripInfoContainer, new TripInfoView(points), RenderPosition.AFTERBEGIN);
-    }
-  }
-
-  _renderFilter(points) {
-    this._filterComponent.setRadioChangeHandler((evt) => points.filter(getFilter[evt.target.value]));
-
-    render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
-  }
-
-  _renderSort() {
-    render(this._tripEventsContainer, this._sortComponent, RenderPosition.BEFOREEND);
-  }
-
-  _renderHeader() {
-
+  _renderNoPoint() {
+    render(this._tripEventsContainer, this._messageComponent, RenderPosition.BEFOREEND);
   }
 
   _renderList() {
@@ -105,12 +73,13 @@ export default class Trip {
   _renderTrip(points) {
 
     if (!points.length) {
-      render(this._tripEventsContainer, this._messageComponent, RenderPosition.BEFOREEND);
+      this._renderNoPoint();
     }
     else {
-      for (let i = 1; i < POINT_COUNT; i++) {
-        this._renderPoint(this._eventsListComponent, points[i]);
-      }
+      // for (let i = 1; i < POINT_COUNT; i++) {
+      //   this._renderPoint(this._eventsListComponent, points[i]);
+      // }
+      points.forEach((point) => this._renderPoint(point));
     }
   }
 }

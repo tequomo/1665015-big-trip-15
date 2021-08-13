@@ -11,6 +11,7 @@ import { generateEvents } from './mock/points.js';
 import { isEscEvent, sortByKey } from './utils/utils.js';
 import { render, RenderPosition, replace } from './utils/render.js';
 import { getFilter } from './utils/common.js';
+import TripPresenter from './presenter/trip.js';
 
 const POINT_COUNT = 20;
 
@@ -96,7 +97,9 @@ const renderTrip = (points) => {
   }
 };
 
-renderHeader(events);
-renderTrip(events);
+const tripPresenter = new TripPresenter(tripEventsElement);
 
+renderHeader(events);
+// renderTrip(events);
+tripPresenter.init(events);
 // render(statsElement, new StatView(), RenderPosition.BEFOREEND);
