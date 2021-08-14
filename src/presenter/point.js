@@ -3,14 +3,20 @@ import PointAddEditView from '../view/point-add-edit.js';
 import { isEscEvent } from '../utils/utils.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
 
 export default class Point {
-  constructor(pointContainer, changeData) {
+  constructor(pointContainer, changeData, changeMode) {
     this._pointContainer = pointContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._pointComponent = null;
     this._pointAddEditComponent = null;
+    this._mode = Mode.DEFAULT;
 
     this._handleButtonPointClick = this._handleButtonPointClick.bind(this);
     this._handleButtonEditClick = this._handleButtonEditClick.bind(this);
@@ -38,11 +44,13 @@ export default class Point {
       return;
     }
 
-    if(this._pointContainer.getElement().contains(prevPointComponent.getElement())) {
+    // if(this._pointContainer.getElement().contains(prevPointComponent.getElement())) {
+    if(this._mode === Mode.DEFAULT) {
       replace(this._pointComponent, prevPointComponent);
     }
 
-    if(this._pointContainer.getElement().contains(prevPointAddEditComponent.getElement())) {
+    // if(this._pointContainer.getElement().contains(prevPointAddEditComponent.getElement())) {
+    if(this._mode === Mode.EDITING) {
       replace(this._pointAddEditComponent, prevPointAddEditComponent);
     }
 
@@ -50,19 +58,28 @@ export default class Point {
     remove(prevPointAddEditComponent);
   }
 
-  _destroy() {
+  destroy() {
     remove(this._pointComponent);
     remove(this._pointAddEditComponent);
+  }
+
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditFormToPoint();
+    }
   }
 
   _replacePointToEditForm() {
     replace(this._pointAddEditComponent, this._pointComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
 
   _replaceEditFormToPoint() {
     replace(this._pointComponent, this._pointAddEditComponent);
     document.removeEventListener('keydown', this._escKeyDownHandler);
+    this._mode = Mode.DEFAULT;
   }
 
   _escKeyDownHandler(evt) {
