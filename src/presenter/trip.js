@@ -7,6 +7,7 @@ import { render, RenderPosition } from '../utils/render.js';
 export default class Trip {
   constructor (tripEventsContainer) {
     this._tripEventsContainer = tripEventsContainer;
+    this._pointPresenter = new Map();
 
     this._sortComponent = new SortView();
     this._eventsListComponent = new EventsListView();
@@ -25,6 +26,12 @@ export default class Trip {
   _renderPoint (point) {
     const pointPresenter = new PointPresenter(this._eventsListComponent);
     pointPresenter.init(point);
+    this._pointPresenter.set(point.id, pointPresenter);
+  }
+
+  _clearPointList() {
+    this._pointPresenter.forEach((presenter) => presenter.destroy());
+    this._pointPresenter.clear();
   }
 
   _renderNoPoint() {
