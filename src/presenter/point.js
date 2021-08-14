@@ -44,12 +44,10 @@ export default class Point {
       return;
     }
 
-    // if(this._pointContainer.getElement().contains(prevPointComponent.getElement())) {
     if(this._mode === Mode.DEFAULT) {
       replace(this._pointComponent, prevPointComponent);
     }
 
-    // if(this._pointContainer.getElement().contains(prevPointAddEditComponent.getElement())) {
     if(this._mode === Mode.EDITING) {
       replace(this._pointAddEditComponent, prevPointAddEditComponent);
     }
