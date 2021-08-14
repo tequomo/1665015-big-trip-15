@@ -54,20 +54,22 @@ export default class Point extends AbstractView {
   constructor(point) {
     super();
     this._point = point;
+
     this._buttonClickHandler = this._buttonClickHandler.bind(this);
     this._favoriteButtonClickHandler = this._favoriteButtonClickHandler.bind(this);
-
   }
 
   getTemplate() {
     return createShowPointTemplate(this._point);
   }
 
-  _buttonClickHandler() {
+  _buttonClickHandler(evt) {
+    evt.preventDefault();
     this._callback._buttonClick();
   }
 
-  _favoriteButtonClickHandler() {
+  _favoriteButtonClickHandler(evt) {
+    evt.preventDefault();
     this._callback._favoriteButtonClick();
   }
 

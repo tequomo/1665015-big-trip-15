@@ -5,8 +5,9 @@ import { remove, render, RenderPosition, replace } from '../utils/render.js';
 
 
 export default class Point {
-  constructor(pointContainer) {
+  constructor(pointContainer, changeData) {
     this._pointContainer = pointContainer;
+    this._changeData = changeData;
 
     this._pointComponent = null;
     this._pointAddEditComponent = null;
@@ -85,6 +86,14 @@ export default class Point {
   }
 
   _handleFavoriteButtonClick() {
-    console.log('clicked!');
+    this._changeData(
+      Object.assign(
+        {},
+        this._point,
+        {
+          isFavorite: !this._point.isFavorite,
+        },
+      ),
+    );
   }
 }
