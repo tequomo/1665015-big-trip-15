@@ -1,10 +1,8 @@
 import EventsListView from '../view/events-list.js';
 import SortView from '../view/sort.js';
-import PointView from '../view/point.js';
-import PointAddEditView from '../view/point-add-edit.js';
 import MessageView from '../view/message.js';
-import { isEscEvent } from '../utils/utils.js';
-import { render, RenderPosition, replace } from '../utils/render.js';
+import PointPresenter from './point.js';
+import { render, RenderPosition } from '../utils/render.js';
 
 export default class Trip {
   constructor (tripEventsContainer) {
@@ -25,41 +23,8 @@ export default class Trip {
   }
 
   _renderPoint (point) {
-    const pointComponent = new PointView(point);
-    const pointAddEditComponent = new PointAddEditView(point, true);
-
-    const replacePointToEditForm =() => {
-      replace(pointAddEditComponent, pointComponent);
-    };
-
-    const replaceEditFormToPoint =() => {
-      replace(pointComponent, pointAddEditComponent);
-    };
-
-    const onEscCloseEdit = (evt) => {
-      if (isEscEvent(evt)) {
-        evt.preventDefault();
-        replaceEditFormToPoint();
-        document.removeEventListener('keydown', onEscCloseEdit);
-      }
-    };
-
-    pointComponent.setButtonClickHandler(() => {
-      replacePointToEditForm();
-      document.addEventListener('keydown', onEscCloseEdit);
-    });
-
-    pointAddEditComponent.setFormSubmitHandler(() => {
-      replaceEditFormToPoint();
-      document.removeEventListener('keydown', onEscCloseEdit);
-    });
-
-    pointAddEditComponent.setButtonClickHandler(() => {
-      replaceEditFormToPoint();
-      document.removeEventListener('keydown', onEscCloseEdit);
-    });
-
-    render(this._eventsListComponent, pointComponent, RenderPosition.BEFOREEND);
+    const pointPresenter = new PointPresenter(this._eventsListComponent);
+    pointPresenter.init(point);
   }
 
   _renderNoPoint() {
@@ -71,15 +36,10 @@ export default class Trip {
   }
 
   _renderTrip(points) {
-
     if (!points.length) {
       this._renderNoPoint();
+      return;
     }
-    else {
-      // for (let i = 1; i < points.length; i++) {
-      //   this._renderPoint(points[i]);
-      // }
-      points.forEach((point) => this._renderPoint(point));
-    }
+    points.forEach((point) => this._renderPoint(point));
   }
 }
