@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { sortByKey } from './utils';
 
 const SHOWN_POINTS = 3;
 
@@ -14,8 +15,10 @@ export const getFilter = {
   past: (point) => (point.dateFrom < dayjs()) || (point.dateFrom > dayjs() > point.dateTo),
 };
 
-export const getDuration = (start, end) => {
-  const diffInMinutes = (dayjs(end)).diff(dayjs(start), 'minutes');
+export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(point.dateFrom), 'minutes');
+
+export const getDuration = (point) => {
+  const diffInMinutes = getEventTimeDiff(point);
   const hours = Math.floor(diffInMinutes / 60);
   const minutes = diffInMinutes - (hours * 60);
   const days = Math.floor(hours / 24);
@@ -72,5 +75,11 @@ export const updatePoint = (points, updatedPoint) => {
     ...points.slice(index + 1),
   ];
 };
+
+export const sortByDay = sortByKey('dateFrom', true);
+
+export const sortByDuration = (pointA, pointB) => getEventTimeDiff(pointB) - getEventTimeDiff(pointA);
+
+export const sortByPrice = sortByKey('basePrice');
 
 export const showMessage = (filterState) => messages[filterState];

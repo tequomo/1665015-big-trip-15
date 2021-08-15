@@ -30,7 +30,7 @@ const createShowPointTemplate = (point) => {
           &mdash;
           <time class="event__end-time" datetime="${endTime}">${shortEndTime}</time>
         </p>
-        <p class="event__duration">${getDuration(dateFrom, dateTo)}</p>
+        <p class="event__duration">${getDuration(point)}</p>
       </div>
       <p class="event__price">
         &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
