@@ -1,5 +1,6 @@
 import { getBoolean, getRandomInteger, getRandomLengthArray, getRandomValue } from '../utils/utils.js';
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
 const EVENT_TYPES = [
   'Taxi',
@@ -129,7 +130,7 @@ export const generateEvents = () => {
     dateFrom,
     dateTo,
     destination,
-    id: 0,
+    id: nanoid(),
     isFavorite,
     eventOffers,
     eventType,
