@@ -9,8 +9,7 @@ import TripPresenter from './presenter/trip.js';
 
 const POINT_COUNT = 20;
 
-const events = new Array(POINT_COUNT).fill().map(generateEvents).sort(sortByKey('dateFrom'));
-
+const events = new Array(POINT_COUNT).fill().map(generateEvents).sort(sortByKey('dateFrom', true));
 
 const bodyElement = document.querySelector('.page-body');
 const headerElement = bodyElement.querySelector('.page-header');
