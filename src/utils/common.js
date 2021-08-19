@@ -9,11 +9,17 @@ const messages = {
   'Future': 'There are no future events now',
 };
 
-export const getFilter = {
-  everything: (point) => point === point,
-  future: (point) => point.dateFrom >= dayjs(),
-  past: (point) => (point.dateFrom < dayjs()) || (point.dateFrom > dayjs() > point.dateTo),
-};
+// export const getFilter = {
+//   everything: (point) => point === point,
+//   future: (point) => point.dateFrom >= dayjs(),
+//   past: (point) => (point.dateFrom < dayjs()) || (point.dateFrom > dayjs() > point.dateTo),
+// };
+
+export const filterOutEverything = (point) => point === point;
+
+export const filterOutFuture = (point) => point.dateFrom >= dayjs();
+
+export const fiterOutPast = (point) => (point.dateFrom < dayjs()) || (point.dateFrom > dayjs() > point.dateTo);
 
 export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(point.dateFrom), 'minutes');
 

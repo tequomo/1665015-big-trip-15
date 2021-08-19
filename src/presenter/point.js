@@ -2,11 +2,7 @@ import PointView from '../view/point.js';
 import PointAddEditView from '../view/point-add-edit.js';
 import { isEscEvent } from '../utils/utils.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
+import { Mode } from '../utils/const.js';
 
 export default class Point {
   constructor(pointContainer, changeData, changeMode) {
