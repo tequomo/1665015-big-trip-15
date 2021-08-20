@@ -22,3 +22,5 @@ export const sortByKey = (key, order) => (a, b) => order ? a[key] - b[key] : b[k
 export const getBoolean = () => Boolean(getRandomInteger(0, 1));
 
 export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export const capitalize = (string) => string && string[0].toUpperCase() + string.slice(1);

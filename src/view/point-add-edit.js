@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
 import { allOffers, getAvailableOffers } from '../mock/points.js';
 import AbstractView from './abstract.js';
+import { mockDestinations } from '../mock/destinations.js';
+import { mockOffers } from '../mock/offers.js';
+import { capitalize } from '../utils/utils.js';
 
 
 const showOffers = (availableOffers, selectedOffers) =>
@@ -30,6 +33,15 @@ const showDestination = ({description = '', pictures = ''}) =>
     </div>` : ''}
   </section>`;
 
+const generateEventTypesList = () => `${mockOffers.map((offer) => `<div class="event__type-item">
+  <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}">
+  <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${capitalize(offer.type)}</label>
+</div>`).join('\n\n')}`;
+
+
+const generateDestinationlist = () => `${mockDestinations.map((destination) => `<option value="${destination.name}"></option>`).join('\n')}`;
+
+
 const createAddEditPointTemplate = (point = {}, isEdited = false) => {
   const {basePrice = '', dateFrom = dayjs(), dateTo = dayjs(), eventType = 'Flight', eventOffers = [], destination = {}} = point;
   const allPointOffers = getAvailableOffers(eventType, allOffers);
@@ -48,55 +60,8 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-              </div>
+              ${generateEventTypesList()}
 
-              <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-              </div>
             </fieldset>
           </div>
         </div>
@@ -107,9 +72,7 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${generateDestinationlist()}
           </datalist>
         </div>
 
