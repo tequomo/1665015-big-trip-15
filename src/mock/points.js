@@ -1,6 +1,8 @@
 import { getBoolean, getRandomInteger, getRandomLengthArray, getRandomValue } from '../utils/utils.js';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
+import { mockOffers } from './offers.js';
+import { mockDestinations } from './destinations.js';
 
 const EVENT_TYPES = [
   'Taxi',
@@ -14,13 +16,13 @@ const EVENT_TYPES = [
   'Restaurant',
 ];
 
-const EVENT_CITIES = [
-  'Amsterdam',
-  'Chamonix',
-  'Geneva',
-  'Liege',
-  'Brugge',
-];
+// const EVENT_CITIES = [
+//   'Amsterdam',
+//   'Chamonix',
+//   'Geneva',
+//   'Liege',
+//   'Brugge',
+// ];
 
 const DESTINATION_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -36,22 +38,39 @@ const DESTINATION_DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const OFFERS_TITLES = [
-  'Laundry',
-  'Choose meal',
-  'Order meal',
-  'Choose seats',
-  'Add luggage',
-  'Drive slowly',
-  'Add breakfast',
-  'Travel by train',
-  'Choose VIP area',
-  'Infotainment system',
-  'Choose temperature',
-  'Choose comfort class',
-  'Choose business class',
-  'Choose the radio station',
+// const OFFERS_TITLES = [
+//   'Laundry',
+//   'Choose meal',
+//   'Order meal',
+//   'Choose seats',
+//   'Add luggage',
+//   'Drive slowly',
+//   'Add breakfast',
+//   'Travel by train',
+//   'Choose VIP area',
+//   'Infotainment system',
+//   'Choose temperature',
+//   'Choose comfort class',
+//   'Choose business class',
+//   'Choose the radio station',
+// ];
+
+const offerTitles = [...new Set(
+  mockOffers
+    .reduce(
+      (prev, curr) =>
+        [...prev,
+          ...curr.offers
+            .map(
+              (offer) => offer.title,
+            ),
+        ],
+      [],
+    ),
+),
 ];
+
+export const eventCities = mockDestinations.map((destination) => destination.name);
 
 const COST_MIN = 0;
 const COST_MAX = 500;
@@ -65,7 +84,7 @@ const OFFER_MAX_PRICE = 200;
 
 
 const generateDestination = () => {
-  const name = getRandomValue(EVENT_CITIES);
+  const name = getRandomValue(eventCities);
   const description = getRandomLengthArray(DESTINATION_DESCRIPTIONS, getRandomInteger(PHRASE_COUNT_MIN, PHRASE_COUNT_MAX)).join(' ');
   const pictures = new Array(getRandomInteger(1, 5)).fill().map(() => ({'src': `http://picsum.photos/248/152?r='${Math.random()}`, 'description': `${name} ${getRandomValue(DESTINATION_DESCRIPTIONS)}`}));
 
@@ -93,16 +112,19 @@ export const generateOffers = () => EVENT_TYPES.map(
       'offers': new Array(getRandomInteger(0, 5)).fill().map(
         () =>
           ({
-            'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)],
+            // 'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)],
+            'title': offerTitles[getRandomInteger(0, offerTitles.length-1)],
             'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE),
           }),
       ),
     }),
 );
 
-const allOffers = generateOffers();
+// const allOffers = generateOffers();
+const allOffers = mockOffers;
 
-const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type === type)).offers;
+
+const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type.toLowerCase() === type.toLowerCase())).offers;
 
 const getSelectedOffers = (type, offers) => {
   const availableOffers = getAvailableOffers(type, offers);

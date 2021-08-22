@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import { allOffers, getAvailableOffers } from '../mock/points.js';
-import AbstractView from './abstract.js';
+import { mockDestinations } from '../mock/destinations.js';
+import { capitalize } from '../utils/utils.js';
+import SmartView from './smart.js';
 
 
 const showOffers = (availableOffers, selectedOffers) =>
@@ -30,9 +32,22 @@ const showDestination = ({description = '', pictures = ''}) =>
     </div>` : ''}
   </section>`;
 
+const generateEventTypesList = () => `${allOffers.map((offer) => `<div class="event__type-item">
+  <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}">
+  <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${capitalize(offer.type)}</label>
+</div>`).join('\n\n')}`;
+
+
+const generateDestinationlist = () => `${mockDestinations.map((destination) => `<option value="${destination.name}"></option>`).join('\n')}`;
+
+const getDestination = (name, destinations) => (destinations.find((destination) => destination.name === name));
+
+
 const createAddEditPointTemplate = (point = {}, isEdited = false) => {
   const {basePrice = '', dateFrom = dayjs(), dateTo = dayjs(), eventType = 'Flight', eventOffers = [], destination = {}} = point;
+
   const allPointOffers = getAvailableOffers(eventType, allOffers);
+  const destinationInfo = getDestination(destination.name, mockDestinations);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -48,55 +63,8 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-              </div>
+              ${generateEventTypesList()}
 
-              <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport">
-                <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-              </div>
             </fieldset>
           </div>
         </div>
@@ -107,9 +75,7 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            ${generateDestinationlist()}
           </datalist>
         </div>
 
@@ -138,32 +104,91 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
       <section class="event__details">
         ${allPointOffers.length && showOffers(allPointOffers, eventOffers) || ''}
 
-        ${Object.keys(destination).length && showDestination(destination) || ''}
+        ${Object.keys(destinationInfo).length && showDestination(destinationInfo) || ''}
       </section>
     </form>
   </li>`;
 };
 
-export default class PointAddEdit extends AbstractView {
+export default class PointAddEdit extends SmartView {
   constructor(point = {}, isEdited = false) {
     super();
-    this._point = point;
+    this._data = PointAddEdit.parsePointToData(point);
     this._isEdited = isEdited;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._buttonClickHandler = this._buttonClickHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
+    // this._offersChangeHandler = this._offersChangeHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createAddEditPointTemplate(this._point, this._isEdited);
+    return createAddEditPointTemplate(this._data, this._isEdited);
+  }
+
+  static parseDataToPoint(data) {
+    return Object.assign(
+      {},
+      data,
+    );
+  }
+
+  static parsePointToData(point) {
+    return Object.assign(
+      {},
+      point,
+    );
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._point);
+    this._callback.formSubmit(PointAddEdit.parseDataToPoint(this._data));
   }
 
   _buttonClickHandler() {
     this._callback.buttonClick();
+  }
+
+  _destinationChangeHandler(evt) {
+    const {name, description, picture} = getDestination(evt.target.value, mockDestinations);
+    this.updateData(
+      {
+        destination: {
+          name,
+          description,
+          picture,
+        },
+      },
+    );
+  }
+
+  _eventTypeChangeHandler(evt) {
+    this.updateData(
+      {
+        eventType: evt.target.value,
+      },
+    );
+  }
+
+  // _offersChangeHandler(evt) {
+  //   if(!evt.target.classList.contains('event__offer-checkbox')) {
+  //     return;
+  //   }
+  //   // this.updateData(
+  //   //   {
+  //   //     offers: [
+
+  //   //     ],
+  //   //   },
+  //   // );
+  // }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector('.event__type-group').addEventListener('change', this._eventTypeChangeHandler);
+    this.getElement().querySelector('.event__input--destination').addEventListener('change', this._destinationChangeHandler);
+    // this.getElement().querySelector('.event__details').addEventListener('click', this._offersChangeHandler);
   }
 
   setFormSubmitHandler(callback) {
@@ -174,5 +199,11 @@ export default class PointAddEdit extends AbstractView {
   setButtonClickHandler(callback) {
     this._callback.buttonClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._buttonClickHandler);
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setButtonClickHandler(this._callback.buttonClick);
   }
 }
