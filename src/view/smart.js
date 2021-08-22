@@ -33,10 +33,10 @@ export default class Smart extends Abstract {
 
     parent.replaceChild(newElement, prevElement);
 
-    this._restoreHandlers();
+    this.restoreHandlers();
   }
 
-  _restoreHandlers() {
+  restoreHandlers() {
     throw new Error('Abstract method not implemented: resetHandlers');
   }
 }
