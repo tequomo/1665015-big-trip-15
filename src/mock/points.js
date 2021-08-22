@@ -1,7 +1,7 @@
 import { getBoolean, getRandomInteger, getRandomLengthArray, getRandomValue } from '../utils/utils.js';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
-import { mockOffers } from './offers.js';
+import { mockOffers as ALLOFFERS } from './offers.js';
 import { mockDestinations } from './destinations.js';
 
 const EVENT_TYPES = [
@@ -56,7 +56,7 @@ const DESTINATION_DESCRIPTIONS = [
 // ];
 
 const offerTitles = [...new Set(
-  mockOffers
+  ALLOFFERS
     .reduce(
       (prev, curr) =>
         [...prev,
@@ -112,7 +112,6 @@ export const generateOffers = () => EVENT_TYPES.map(
       'offers': new Array(getRandomInteger(0, 5)).fill().map(
         () =>
           ({
-            // 'title': OFFERS_TITLES[getRandomInteger(0, OFFERS_TITLES.length-1)],
             'title': offerTitles[getRandomInteger(0, offerTitles.length-1)],
             'price': getRandomInteger(OFFER_MIN_PRICE, OFFER_MAX_PRICE),
           }),
@@ -121,8 +120,6 @@ export const generateOffers = () => EVENT_TYPES.map(
 );
 
 // const allOffers = generateOffers();
-const allOffers = mockOffers;
-
 
 const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type.toLowerCase() === type.toLowerCase())).offers;
 
@@ -139,7 +136,7 @@ const eventsDataHelper = () => {
   const dateTo = Math.max(...dates);
   const basePrice = getRandomInteger(COST_MIN, COST_MAX);
   const destination = generateDestination();
-  const eventOffers = getSelectedOffers(eventType, allOffers);
+  const eventOffers = getSelectedOffers(eventType, ALLOFFERS);
   return [eventType, isFavorite, dateFrom, dateTo, basePrice, destination, eventOffers];
 };
 
@@ -159,4 +156,4 @@ export const generateEvents = () => {
   };
 };
 
-export { allOffers, getAvailableOffers };
+export { getAvailableOffers };

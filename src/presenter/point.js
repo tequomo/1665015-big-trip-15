@@ -2,7 +2,7 @@ import PointView from '../view/point.js';
 import PointAddEditView from '../view/point-add-edit.js';
 import { isEscEvent } from '../utils/utils.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
-import { Mode } from '../utils/const.js';
+import { FormState, Mode } from '../utils/const.js';
 
 export default class Point {
   constructor(pointContainer, changeData, changeMode) {
@@ -13,6 +13,7 @@ export default class Point {
     this._pointComponent = null;
     this._pointAddEditComponent = null;
     this._mode = Mode.DEFAULT;
+    this._formState = FormState.DEFAULT;
 
     this._handleButtonPointClick = this._handleButtonPointClick.bind(this);
     this._handleButtonEditClick = this._handleButtonEditClick.bind(this);
@@ -28,7 +29,7 @@ export default class Point {
     const prevPointAddEditComponent = this._pointAddEditComponent;
 
     this._pointComponent = new PointView(this._point);
-    this._pointAddEditComponent = new PointAddEditView(this._point, true);
+    this._pointAddEditComponent = new PointAddEditView(this._point, this._formState);
 
     this._pointComponent.setButtonClickHandler(this._handleButtonPointClick);
     this._pointComponent.setFavoriteButtonClickHandler(this._handleFavoriteButtonClick);
