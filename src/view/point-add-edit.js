@@ -142,6 +142,7 @@ export default class PointAddEdit extends SmartView {
 
     this._setInnerHandlers();
     this._setStartDatepicker();
+    this._setEndDatepicker();
   }
 
   getTemplate() {
@@ -166,7 +167,6 @@ export default class PointAddEdit extends SmartView {
         dateFormat: 'd/m/y H:i',
         defaultDate: this._data.dateFrom,
         onChange: this._eventStartChangeHandler,
-        // plugins: [new rangePlugin({input: '#event-end-time-1'})],
       },
     );
   }
@@ -184,7 +184,7 @@ export default class PointAddEdit extends SmartView {
         dateFormat: 'd/m/y H:i',
         defaultDate: this._data.dateTo,
         onChange: this._eventEndChangeHandler,
-        // plugins: [new rangePlugin({input: '#event-end-time-1'})],
+        minDate: this._data.dateFrom,
       },
     );
   }
