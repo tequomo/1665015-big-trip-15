@@ -6,6 +6,7 @@ import { sortByKey } from './utils/utils.js';
 import { render, RenderPosition } from './utils/render.js';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter.js';
+import PointsModel from './model/points.js';
 
 const POINT_COUNT = 20;
 
@@ -19,6 +20,9 @@ const navigationElement = headerElement.querySelector('.trip-controls__navigatio
 const tripMainElement = headerElement.querySelector('.trip-main');
 const tripFilterElement = headerElement.querySelector('.trip-controls__filters');
 const tripEventsElement = mainElement.querySelector('.trip-events');
+
+const pointsModel = new PointsModel();
+pointsModel.points = events;
 
 
 const renderHeader = (points) => {
@@ -38,7 +42,7 @@ const renderHeader = (points) => {
   // render(tripFilterElement, filterComponent, RenderPosition.BEFOREEND);
 };
 
-const tripPresenter = new TripPresenter(tripEventsElement);
+const tripPresenter = new TripPresenter(tripEventsElement, pointsModel);
 
 renderHeader(events);
 tripPresenter.init(events);
