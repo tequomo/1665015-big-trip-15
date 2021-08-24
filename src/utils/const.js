@@ -14,3 +14,8 @@ export const FilterType = {
   FUTURE: 'future',
   PAST: 'past',
 };
+
+export const FormState = {
+  DEFAULT: 'EDIT',
+  ADD: 'ADD',
+};

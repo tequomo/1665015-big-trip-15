@@ -1,8 +1,13 @@
 import dayjs from 'dayjs';
-import { allOffers, getAvailableOffers } from '../mock/points.js';
-import { mockDestinations } from '../mock/destinations.js';
+import flatpickr from 'flatpickr';
+import { getAvailableOffers } from '../mock/points.js';
+import { mockOffers as ALLOFFERS } from '../mock/offers.js';
+import { mockDestinations as ALLDESTINATIONS } from '../mock/destinations.js';
 import { capitalize } from '../utils/utils.js';
 import SmartView from './smart.js';
+import { FormState } from '../utils/const.js';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 
 const showOffers = (availableOffers, selectedOffers) =>
@@ -32,22 +37,32 @@ const showDestination = ({description = '', pictures = ''}) =>
     </div>` : ''}
   </section>`;
 
-const generateEventTypesList = () => `${allOffers.map((offer) => `<div class="event__type-item">
-  <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}">
-  <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${capitalize(offer.type)}</label>
-</div>`).join('\n\n')}`;
+const generateEventTypesList = () => `${ALLOFFERS
+  .map((offer) =>
+    `<div class="event__type-item">
+      <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}">
+      <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${capitalize(offer.type)}</label>
+    </div>`,
+  )
+  .join('\n\n')
+}`;
 
 
-const generateDestinationlist = () => `${mockDestinations.map((destination) => `<option value="${destination.name}"></option>`).join('\n')}`;
+const generateDestinationlist = () => `${ALLDESTINATIONS
+  .map((destination) =>
+    `<option value="${destination.name}"></option>`,
+  )
+  .join('\n')
+}`;
 
 const getDestination = (name, destinations) => (destinations.find((destination) => destination.name === name));
 
 
-const createAddEditPointTemplate = (point = {}, isEdited = false) => {
+const createAddEditPointTemplate = (point = {}, state) => {
   const {basePrice = '', dateFrom = dayjs(), dateTo = dayjs(), eventType = 'Flight', eventOffers = [], destination = {}} = point;
 
-  const allPointOffers = getAvailableOffers(eventType, allOffers);
-  const destinationInfo = getDestination(destination.name, mockDestinations);
+  const allPointOffers = getAvailableOffers(eventType, ALLOFFERS);
+  const destinationInfo = getDestination(destination.name, ALLDESTINATIONS);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -96,8 +111,8 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${(isEdited) ? 'Delete' : 'Cancel'}</button>
-        ${(isEdited) ? `<button class="event__rollup-btn" type="button">
+        <button class="event__reset-btn" type="reset">${(state === FormState.DEFAULT) ? 'Delete' : 'Cancel'}</button>
+        ${(state === FormState.DEFAULT) ? `<button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>` : ''}
       </header>
@@ -111,35 +126,27 @@ const createAddEditPointTemplate = (point = {}, isEdited = false) => {
 };
 
 export default class PointAddEdit extends SmartView {
-  constructor(point = {}, isEdited = false) {
+  constructor(point = {}, state) {
     super();
     this._data = PointAddEdit.parsePointToData(point);
-    this._isEdited = isEdited;
+    this._startDatepicker = null;
+    this._endDatepicker = null;
+    this._state = state;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._buttonClickHandler = this._buttonClickHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
+    this._eventStartChangeHandler = this._eventStartChangeHandler.bind(this);
+    this._eventEndChangeHandler = this._eventEndChangeHandler.bind(this);
     // this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setEndDatepicker();
   }
 
   getTemplate() {
-    return createAddEditPointTemplate(this._data, this._isEdited);
-  }
-
-  static parseDataToPoint(data) {
-    return Object.assign(
-      {},
-      data,
-    );
-  }
-
-  static parsePointToData(point) {
-    return Object.assign(
-      {},
-      point,
-    );
+    return createAddEditPointTemplate(this._data, this._state);
   }
 
   _formSubmitHandler(evt) {
@@ -147,19 +154,50 @@ export default class PointAddEdit extends SmartView {
     this._callback.formSubmit(PointAddEdit.parseDataToPoint(this._data));
   }
 
+  _setStartDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+
+    this._startDatepicker = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateFrom,
+        onChange: this._eventStartChangeHandler,
+      },
+    );
+  }
+
+  _setEndDatepicker() {
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
+
+    this._endDatepicker = flatpickr(
+      this.getElement().querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.dateTo,
+        onChange: this._eventEndChangeHandler,
+        minDate: this._data.dateFrom,
+      },
+    );
+  }
+
   _buttonClickHandler() {
     this._callback.buttonClick();
   }
 
   _destinationChangeHandler(evt) {
-    const {name, description, picture} = getDestination(evt.target.value, mockDestinations);
+    const destination = getDestination(evt.target.value, ALLDESTINATIONS);
     this.updateData(
       {
-        destination: {
-          name,
-          description,
-          picture,
-        },
+        destination,
       },
     );
   }
@@ -168,6 +206,22 @@ export default class PointAddEdit extends SmartView {
     this.updateData(
       {
         eventType: evt.target.value,
+      },
+    );
+  }
+
+  _eventStartChangeHandler([userDate]) {
+    this.updateData(
+      {
+        dateFrom: userDate,
+      },
+    );
+  }
+
+  _eventEndChangeHandler([userDate]) {
+    this.updateData(
+      {
+        dateTo: userDate,
       },
     );
   }
@@ -203,7 +257,23 @@ export default class PointAddEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setEndDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setButtonClickHandler(this._callback.buttonClick);
+  }
+
+  static parseDataToPoint(data) {
+    return Object.assign(
+      {},
+      data,
+    );
+  }
+
+  static parsePointToData(point) {
+    return Object.assign(
+      {},
+      point,
+    );
   }
 }
