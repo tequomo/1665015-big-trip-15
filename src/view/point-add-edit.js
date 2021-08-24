@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
+import rangePlugin from '../../node_modules/flatpickr/dist/plugins/rangePlugin';
 import { getAvailableOffers } from '../mock/points.js';
 import { mockOffers as ALLOFFERS } from '../mock/offers.js';
 import { mockDestinations as ALLDESTINATIONS } from '../mock/destinations.js';
@@ -37,10 +38,10 @@ const showDestination = ({description = '', pictures = ''}) =>
     </div>` : ''}
   </section>`;
 
-const generateEventTypesList = () => `${ALLOFFERS
+const generateEventTypesList = (type) => `${ALLOFFERS
   .map((offer) =>
     `<div class="event__type-item">
-      <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}">
+      <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}"${(offer.type === type.toLowerCase()) ? 'checked' : ''}>
       <label class="event__type-label  event__type-label--${offer.type}" for="event-type-${offer.type}-1">${capitalize(offer.type)}</label>
     </div>`,
   )
@@ -78,7 +79,7 @@ const createAddEditPointTemplate = (point = {}, state) => {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              ${generateEventTypesList()}
+              ${generateEventTypesList(eventType)}
 
             </fieldset>
           </div>
@@ -131,18 +132,21 @@ export default class PointAddEdit extends SmartView {
     this._data = PointAddEdit.parsePointToData(point);
     this._startDatepicker = null;
     this._endDatepicker = null;
+    this._rangeDatepicker = null;
     this._state = state;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._buttonClickHandler = this._buttonClickHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
-    this._eventStartChangeHandler = this._eventStartChangeHandler.bind(this);
-    this._eventEndChangeHandler = this._eventEndChangeHandler.bind(this);
+    // this._eventStartChangeHandler = this._eventStartChangeHandler.bind(this);
+    // this._eventEndChangeHandler = this._eventEndChangeHandler.bind(this);
+    this._eventRangeChangeHandler = this._eventRangeChangeHandler.bind(this);
     // this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
-    this._setStartDatepicker();
-    this._setEndDatepicker();
+    // this._setStartDatepicker();
+    // this._setEndDatepicker();
+    this._setRangeDatepicker();
   }
 
   getTemplate() {
@@ -153,6 +157,25 @@ export default class PointAddEdit extends SmartView {
     evt.preventDefault();
     this._callback.formSubmit(PointAddEdit.parseDataToPoint(this._data));
   }
+
+  _setRangeDatepicker() {
+    if (this._rangeDatepicker) {
+      this._rangeDatepicker.destroy();
+      this._rangeDatepicker = null;
+    }
+
+    this._rangeDatepicker = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        // defaultDate: this._data.dateFrom,
+        onChange: this._eventRangeChangeHandler,
+        plugins: [new rangePlugin({ input: this.getElement().querySelector('#event-end-time-1')})],
+      },
+    );
+  }
+
 
   _setStartDatepicker() {
     if (this._startDatepicker) {
@@ -226,6 +249,16 @@ export default class PointAddEdit extends SmartView {
     );
   }
 
+  _eventRangeChangeHandler([userDateFrom, userDateTo]) {
+    this.updateData(
+      {
+        dateFrom: userDateFrom,
+        dateTo: userDateTo,
+      },
+      true,
+    );
+  }
+
   // _offersChangeHandler(evt) {
   //   if(!evt.target.classList.contains('event__offer-checkbox')) {
   //     return;
@@ -257,8 +290,9 @@ export default class PointAddEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    this._setStartDatepicker();
-    this._setEndDatepicker();
+    // this._setStartDatepicker();
+    // this._setEndDatepicker();
+    this._setRangeDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setButtonClickHandler(this._callback.buttonClick);
   }
