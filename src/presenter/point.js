@@ -66,6 +66,7 @@ export default class Point {
 
   _replacePointToEditForm() {
     replace(this._pointAddEditComponent, this._pointComponent);
+    this._pointAddEditComponent.setRangeDatepicker();
     document.addEventListener('keydown', this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
@@ -73,6 +74,7 @@ export default class Point {
 
   _replaceEditFormToPoint() {
     replace(this._pointComponent, this._pointAddEditComponent);
+    this._pointAddEditComponent.removeRangeDatePicker();
     document.removeEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
   }

@@ -146,7 +146,7 @@ export default class PointAddEdit extends SmartView {
     this._setInnerHandlers();
     // this._setStartDatepicker();
     // this._setEndDatepicker();
-    this._setRangeDatepicker();
+    // this.setRangeDatepicker();
   }
 
   getTemplate() {
@@ -158,10 +158,9 @@ export default class PointAddEdit extends SmartView {
     this._callback.formSubmit(PointAddEdit.parseDataToPoint(this._data));
   }
 
-  _setRangeDatepicker() {
+  setRangeDatepicker() {
     if (this._rangeDatepicker) {
-      this._rangeDatepicker.destroy();
-      this._rangeDatepicker = null;
+      this.removeRangeDatePicker();
     }
 
     this._rangeDatepicker = flatpickr(
@@ -174,6 +173,11 @@ export default class PointAddEdit extends SmartView {
         plugins: [new rangePlugin({ input: this.getElement().querySelector('#event-end-time-1')})],
       },
     );
+  }
+
+  removeRangeDatePicker() {
+    this._rangeDatepicker.destroy();
+    this._rangeDatepicker = null;
   }
 
 
@@ -292,7 +296,7 @@ export default class PointAddEdit extends SmartView {
     this._setInnerHandlers();
     // this._setStartDatepicker();
     // this._setEndDatepicker();
-    this._setRangeDatepicker();
+    this.setRangeDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setButtonClickHandler(this._callback.buttonClick);
   }
