@@ -45,4 +45,4 @@ const renderHeader = (points) => {
 const tripPresenter = new TripPresenter(tripEventsElement, pointsModel);
 
 renderHeader(events);
-tripPresenter.init(events);
+tripPresenter.init();

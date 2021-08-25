@@ -2,7 +2,7 @@ import PointView from '../view/point.js';
 import PointAddEditView from '../view/point-add-edit.js';
 import { isEscEvent } from '../utils/utils.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
-import { FormState, Mode } from '../utils/const.js';
+import { FormState, Mode, UpdateType, UserAction } from '../utils/const.js';
 
 export default class Point {
   constructor(pointContainer, changeData, changeMode) {
@@ -100,6 +100,8 @@ export default class Point {
 
   _handleFavoriteButtonClick() {
     this._changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._point,
