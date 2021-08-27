@@ -68,6 +68,8 @@ export const getTotalCost = (points) => (
     ), 0)
 );
 
+export const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB);
+
 export const sortByDay = sortByKey('dateFrom', true);
 
 export const sortByDuration = (pointA, pointB) => getEventTimeDiff(pointB) - getEventTimeDiff(pointA);

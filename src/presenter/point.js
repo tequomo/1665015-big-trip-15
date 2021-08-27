@@ -3,6 +3,7 @@ import PointAddEditView from '../view/point-add-edit.js';
 import { isEscEvent } from '../utils/utils.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
 import { FormState, Mode, UpdateType, UserAction } from '../utils/const.js';
+import { isDatesEqual } from '../utils/common.js';
 
 export default class Point {
   constructor(pointContainer, changeData, changeMode) {
@@ -17,6 +18,7 @@ export default class Point {
 
     this._handleButtonPointClick = this._handleButtonPointClick.bind(this);
     this._handleButtonEditClick = this._handleButtonEditClick.bind(this);
+    this._handleButtonDeleteClick = this._handleButtonDeleteClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleFavoriteButtonClick = this._handleFavoriteButtonClick.bind(this);
@@ -35,6 +37,7 @@ export default class Point {
     this._pointComponent.setFavoriteButtonClickHandler(this._handleFavoriteButtonClick);
     this._pointAddEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointAddEditComponent.setButtonClickHandler(this._handleButtonEditClick);
+    this._pointAddEditComponent.setButtonDeleteClickHandler(this._handleButtonDeleteClick);
 
     if(prevPointComponent === null || prevPointAddEditComponent === null) {
       render(this._pointContainer, this._pointComponent, RenderPosition.BEFOREEND);
@@ -95,8 +98,23 @@ export default class Point {
     this._replaceEditFormToPoint();
   }
 
-  _handleFormSubmit(point) {
-    this._changeData(point);
+  _handleButtonDeleteClick(point) {
+    this._changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  }
+
+  _handleFormSubmit(update) {
+    const isMinorUpdate =
+    !isDatesEqual(this._point.dateFrom, update.dateFrom) ||
+    !isDatesEqual(this._point.dateTo, update.dateTo);
+    this._changeData(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this._replaceEditFormToPoint();
   }
 
