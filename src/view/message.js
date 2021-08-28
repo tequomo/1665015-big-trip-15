@@ -1,14 +1,19 @@
-import { showMessage } from '../utils/common.js';
+import { Messages } from '../utils/common.js';
 import AbstractView from './abstract.js';
 
-const createMessageTemplate = () => (
-  `<p class="trip-events__msg">${showMessage('Everything')}
+const createMessageTemplate = (filterType) => (
+  `<p class="trip-events__msg">${Messages[filterType]}
   </p>`
 );
 
 export default class Message extends AbstractView {
+  constructor(option) {
+    super();
+    this._option = option;
+  }
+
   getTemplate() {
-    return createMessageTemplate();
+    return createMessageTemplate(this._option);
   }
 }
 

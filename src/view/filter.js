@@ -1,40 +1,39 @@
 import AbstractView from './abstract.js';
-import { FilterType } from '../utils/const.js';
+import { capitalize } from '../utils/utils.js';
 
-const createTripFilterTemplate = () => (
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const { name, type} = filter;
+  return `<div class="trip-filters__filter">
+    <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${name}" ${type === currentFilterType ? 'checked' : ''}>
+    <label class="trip-filters__filter-label" for="filter-${name}">${capitalize(name)}</label>
+</div>`;
+};
+
+const createTripFilterTemplate = (filters, currentFilterType) => (
   `<form class="trip-filters" action="#" method="get">
-  <div class="trip-filters__filter">
-    <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" data-filter-type="${FilterType.DEFAULT}" checked>
-    <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
-  </div>
-
-  <div class="trip-filters__filter">
-    <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future" data-filter-type="${FilterType.FUTURE}">
-    <label class="trip-filters__filter-label" for="filter-future">Future</label>
-  </div>
-
-  <div class="trip-filters__filter">
-    <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past" data-filter-type="${FilterType.PAST}">
-    <label class="trip-filters__filter-label" for="filter-past">Past</label>
-  </div>
-
+    ${filters
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
+    .join('\n\n')}
   <button class="visually-hidden" type="submit">Accept filter</button>
 </form>`
 );
 
 export default class Filter extends AbstractView {
-  constructor(points) {
+  constructor(filters, currentFilterType) {
     super();
-    this._points = points;
+    this._filters = filters;
+    this._currentFilter = currentFilterType;
+
     this._radioChangeHandler = this._radioChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createTripFilterTemplate();
+    return createTripFilterTemplate(this._filters, this._currentFilter);
   }
 
   _radioChangeHandler(evt) {
-    this._callback.radioChange(evt.target.dataset.filterType);
+    evt.preventDefault();
+    this._callback.radioChange(evt.target.value);
   }
 
   setRadioChangeHandler(callback) {

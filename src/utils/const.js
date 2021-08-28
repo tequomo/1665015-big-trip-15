@@ -9,7 +9,7 @@ export const SortType = {
   PRICE: 'price',
 };
 
-export const FilterType = {
+export const FiltersType = {
   DEFAULT: 'everything',
   FUTURE: 'future',
   PAST: 'past',
