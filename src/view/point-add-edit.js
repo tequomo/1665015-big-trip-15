@@ -59,11 +59,11 @@ const generateDestinationlist = () => `${ALLDESTINATIONS
 const getDestination = (name, destinations) => (destinations.find((destination) => destination.name === name));
 
 
-const createAddEditPointTemplate = (point = {}, state) => {
-  const {basePrice = '', dateFrom = dayjs(), dateTo = dayjs(), eventType = 'Flight', eventOffers = [], destination = {}} = point;
+const createAddEditPointTemplate = (point, state) => {
+  const {basePrice, dateFrom, dateTo, eventType, eventOffers, destination} = point;
 
-  const allPointOffers = getAvailableOffers(eventType, ALLOFFERS);
-  const destinationInfo = getDestination(destination.name, ALLDESTINATIONS);
+  const allPointOffers = eventType ? getAvailableOffers(eventType, ALLOFFERS) : [];
+  const destinationInfo = getDestination(destination.name, ALLDESTINATIONS) || {};
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -71,7 +71,7 @@ const createAddEditPointTemplate = (point = {}, state) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType.toLowerCase()}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${eventType ? eventType.toLowerCase() : 'transport'}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -89,7 +89,7 @@ const createAddEditPointTemplate = (point = {}, state) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${eventType}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1" >
           <datalist id="destination-list-1">
             ${generateDestinationlist()}
           </datalist>
@@ -108,7 +108,7 @@ const createAddEditPointTemplate = (point = {}, state) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}" pattern="^[ 0-9]+$">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -127,11 +127,9 @@ const createAddEditPointTemplate = (point = {}, state) => {
 };
 
 export default class PointAddEdit extends SmartView {
-  constructor(point = {}, state) {
+  constructor(point, state) {
     super();
     this._data = PointAddEdit.parsePointToData(point);
-    this._startDatepicker = null;
-    this._endDatepicker = null;
     this._rangeDatepicker = null;
     this._state = state;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
@@ -140,6 +138,7 @@ export default class PointAddEdit extends SmartView {
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
     this._eventRangeChangeHandler = this._eventRangeChangeHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
     // this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
@@ -192,27 +191,42 @@ export default class PointAddEdit extends SmartView {
         dateFrom: userDateFrom,
         dateTo: userDateTo,
       },
-      true,
+      // true,
     );
   }
 
   // _offersChangeHandler(evt) {
-  //   if(!evt.target.classList.contains('event__offer-checkbox')) {
-  //     return;
-  //   }
+  //   // if(!evt.target.classList.contains('event__offer-checkbox')) {
+  //   //   return;
+  //   // }
+  //   const selectedOffers = this.getElement().querySelectorAll('.event__offer-checkbox');
   //   // this.updateData(
   //   //   {
-  //   //     offers: [
+  //   //     eventOffers: [
 
   //   //     ],
   //   //   },
   //   // );
   // }
 
+  _priceChangeHandler(evt) {
+    this.updateData(
+      {
+        basePrice: evt.target.value,
+      },
+      true,
+    );
+  }
+
   _setInnerHandlers() {
     this.getElement().querySelector('.event__type-group').addEventListener('change', this._eventTypeChangeHandler);
     this.getElement().querySelector('.event__input--destination').addEventListener('change', this._destinationChangeHandler);
     // this.getElement().querySelector('.event__details').addEventListener('click', this._offersChangeHandler);
+  }
+
+  setPriceChangeHandler(callback) {
+    this._callback.priceChange = callback;
+    this.getElement().querySelector('.event__input--price').addEventListener('input', this._priceChangeHandler);
   }
 
   setFormSubmitHandler(callback) {
@@ -254,8 +268,11 @@ export default class PointAddEdit extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setRangeDatepicker();
+    this.setPriceChangeHandler();
     this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setButtonClickHandler(this._callback.buttonClick);
+    if(this.getElement().querySelector('event__rollup-btn')) {
+      this.setButtonClickHandler(this._callback.buttonClick);
+    }
     this.setButtonDeleteClickHandler(this._callback.buttonDeleteClick);
   }
 

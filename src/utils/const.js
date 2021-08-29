@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
@@ -30,4 +32,18 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+};
+
+export const NEW_POINT = {
+  'eventType': '',
+  'dateFrom': dayjs(),
+  'dateTo': dayjs(),
+  'destination': {
+    'name': '',
+    'description': '',
+    'pictures': [],
+  },
+  'basePrice': '',
+  'isFavorite': false,
+  'eventOffers': [],
 };
