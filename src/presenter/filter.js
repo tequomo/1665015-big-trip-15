@@ -1,50 +1,64 @@
 import FilterView from '../view/filter.js';
-import { filterOutEverything, filterOutFuture, fiterOutPast } from '../utils/common.js';
-import { FilterType } from '../utils/const.js';
-import { render, RenderPosition } from '../utils/render.js';
+import { FiltersType, UpdateType } from '../utils/const.js';
+import { remove, render, RenderPosition, replace } from '../utils/render.js';
 
 export default class Filter {
-  constructor(filtersContainer) {
+  constructor(filtersContainer, filterModel, pointsModel) {
     this._filtersContainer = filtersContainer;
-    this._currentFilterType = FilterType.DEFAULT;
+    this._filterModel = filterModel;
+    this._pointsModel = pointsModel;
 
-    this._filterComponent = new FilterView();
+    this._filterComponent = null;
 
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
+
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
-  init(points) {
-    this._points = points.slice();
-    this._sourcedPoints = points.slice();
+  init() {
+    const filters = this._getFilters();
+    const prevFilterComponent = this._filterComponent;
 
-    this._renderFilter();
-  }
-
-  _renderFilter() {
-    render(this._filtersContainer, this._filterComponent, RenderPosition.BEFOREEND);
+    this._filterComponent = new FilterView(filters, this._filterModel.getFilter());
     this._filterComponent.setRadioChangeHandler(this._handleFilterTypeChange);
-  }
 
-  _filterTrip(filterType) {
-    switch (filterType) {
-      case FilterType.FUTURE:
-        this._points.filter(filterOutFuture);
-        break;
-      case FilterType.PAST:
-        this._points.filter(fiterOutPast);
-        break;
-      default:
-        // this._points = this._sourcedPoints.slice();
-        this._points.filter(filterOutEverything);
+    if (prevFilterComponent === null) {
+      render(this._filtersContainer, this._filterComponent, RenderPosition.BEFOREEND);
+      return;
     }
 
-    this._currentFilterType = filterType;
+    replace(this._filterComponent, prevFilterComponent);
+    remove(prevFilterComponent);
+  }
+
+  _handleModelEvent() {
+    this.init();
   }
 
   _handleFilterTypeChange(filterType) {
-    // console.log(filterType);
-    this._filterTrip(filterType);
-    // this._clearTrip();
-    // this._renderTrip();
+    if (this._filterModel.getFilter() === filterType) {
+      return;
+    }
+
+    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
+  }
+
+  _getFilters() {
+    return [
+      {
+        type: FiltersType.DEFAULT,
+        name: 'everything',
+      },
+      {
+        type: FiltersType.FUTURE,
+        name: 'future',
+      },
+      {
+        type: FiltersType.PAST,
+        name: 'past',
+      },
+    ];
   }
 }

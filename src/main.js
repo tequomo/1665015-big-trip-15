@@ -1,4 +1,3 @@
-// import FilterView from './view/filter.js';
 import SiteMenuView from './view/site-menu.js';
 import TripInfoView from './view/trip-info.js';
 import { generateEvents } from './mock/points.js';
@@ -6,6 +5,8 @@ import { sortByKey } from './utils/utils.js';
 import { render, RenderPosition } from './utils/render.js';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter.js';
+import PointsModel from './model/points.js';
+import FilterModel from './model/filter.js';
 
 const POINT_COUNT = 20;
 
@@ -20,25 +21,28 @@ const tripMainElement = headerElement.querySelector('.trip-main');
 const tripFilterElement = headerElement.querySelector('.trip-controls__filters');
 const tripEventsElement = mainElement.querySelector('.trip-events');
 
+const pointsModel = new PointsModel();
+pointsModel.points = events;
+
+const filterModel = new FilterModel();
 
 const renderHeader = (points) => {
-  // const filterComponent = new FilterView(points);
 
   render(navigationElement, new SiteMenuView, RenderPosition.BEFOREEND);
 
   if (points.length !== 0) {
     render(tripMainElement, new TripInfoView(points), RenderPosition.AFTERBEGIN);
   }
-
-  const filterPresenter = new FilterPresenter(tripFilterElement);
-  filterPresenter.init(events);
-
-  // filterComponent.setRadioChangeHandler((evt) => points.filter(getFilter[evt.target.value]));
-
-  // render(tripFilterElement, filterComponent, RenderPosition.BEFOREEND);
 };
 
-const tripPresenter = new TripPresenter(tripEventsElement);
+const filterPresenter = new FilterPresenter(tripFilterElement, filterModel, pointsModel);
+const tripPresenter = new TripPresenter(tripEventsElement, pointsModel, filterModel);
 
 renderHeader(events);
-tripPresenter.init(events);
+filterPresenter.init();
+tripPresenter.init();
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  tripPresenter.createPoint();
+});

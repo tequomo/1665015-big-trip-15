@@ -1,25 +1,20 @@
 import dayjs from 'dayjs';
-import { sortByKey } from './utils';
+import { sortByKey } from './utils.js';
+import { FiltersType } from './const.js';
 
 const SHOWN_POINTS = 3;
 
-const messages = {
-  'Everything': 'Click New Event to create your first point',
-  'Past': 'There are no past events now',
-  'Future': 'There are no future events now',
+export const Messages = {
+  [FiltersType.DEFAULT]: 'Click New Event to create your first point',
+  [FiltersType.PAST]: 'There are no past events now',
+  [FiltersType.FUTURE]: 'There are no future events now',
 };
 
-// export const getFilter = {
-//   everything: (point) => point === point,
-//   future: (point) => point.dateFrom >= dayjs(),
-//   past: (point) => (point.dateFrom < dayjs()) || (point.dateFrom > dayjs() > point.dateTo),
-// };
-
-export const filterOutEverything = (point) => point === point;
-
-export const filterOutFuture = (point) => point.dateFrom >= dayjs();
-
-export const fiterOutPast = (point) => (point.dateFrom < dayjs()) || (point.dateFrom > dayjs() > point.dateTo);
+export const filter = {
+  [FiltersType.DEFAULT]: (points) => points.filter((point) => point === point),
+  [FiltersType.FUTURE]: (points) => points.filter((point) => point.dateFrom >= dayjs() || point.dateFrom < dayjs() & dayjs() < point.dateTo),
+  [FiltersType.PAST]: (points) => points.filter((point) => (point.dateTo < dayjs()) || point.dateFrom < dayjs() & dayjs() < point.dateTo),
+};
 
 export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(point.dateFrom), 'minutes');
 
@@ -68,24 +63,10 @@ export const getTotalCost = (points) => (
     ), 0)
 );
 
-export const updatePoint = (points, updatedPoint) => {
-  const index = points.findIndex((point) => point.id === updatedPoint.id);
-
-  if (index === -1) {
-    return points;
-  }
-
-  return [
-    ...points.slice(0, index),
-    updatedPoint,
-    ...points.slice(index + 1),
-  ];
-};
+export const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) ? true : dayjs(dateA).isSame(dateB);
 
 export const sortByDay = sortByKey('dateFrom', true);
 
 export const sortByDuration = (pointA, pointB) => getEventTimeDiff(pointB) - getEventTimeDiff(pointA);
 
 export const sortByPrice = sortByKey('basePrice');
-
-export const showMessage = (filterState) => messages[filterState];
