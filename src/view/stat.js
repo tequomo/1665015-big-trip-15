@@ -1,4 +1,6 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
+import flatpickr from 'flatpickr';
+import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 
 const statsType = [
   'money',
@@ -36,13 +38,41 @@ const createStatsTemplate = () => (
   </section>`
 );
 
-export default class Stat extends AbstractView {
+export default class Stat extends SmartView {
   constructor(points) {
     super();
-    this._points = points;
+    this._data = {
+      points,
+    };
+  }
+
+  removeElement() {
+    super.removeElement();
+    this.removeRangeDatePicker();
   }
 
   getTemplate() {
     return createStatsTemplate(this._points);
+  }
+
+  setRangeDatepicker() {
+    this.removeRangeDatePicker();
+
+    this._rangeDatepicker = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        onClose: this._eventRangeChangeHandler,
+        plugins: [new rangePlugin({ input: this.getElement().querySelector('#event-end-time-1')})],
+      },
+    );
+  }
+
+  removeRangeDatePicker() {
+    if (this._rangeDatepicker) {
+      this._rangeDatepicker.destroy();
+      this._rangeDatepicker = null;
+    }
   }
 }

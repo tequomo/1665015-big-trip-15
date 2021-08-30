@@ -42,7 +42,7 @@ const renderHeader = (points) => {
 
 const filterPresenter = new FilterPresenter(tripFilterElement, filterModel, pointsModel);
 const tripPresenter = new TripPresenter(tripEventsElement, pointsModel, filterModel);
-const statsComponent = new StatView(pointsModel);
+const statsComponent = new StatView(pointsModel.points);
 
 renderHeader(events);
 filterPresenter.init();
@@ -66,12 +66,11 @@ document.querySelector('.trip-main__event-add-btn').addEventListener('click', (e
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
-      // Показать доску
       tripPresenter.init();
       // Скрыть статистику
+      // statsComponent.removeElement();
       break;
     case MenuItem.STATS:
-      // Скрыть доску
       tripPresenter.destroy();
       // Показать статистику
       break;
