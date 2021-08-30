@@ -7,6 +7,8 @@ import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter.js';
 import PointsModel from './model/points.js';
 import FilterModel from './model/filter.js';
+import StatView from './view/stat.js';
+import { FiltersType, MenuItem, UpdateType } from './utils/const.js';
 
 const POINT_COUNT = 20;
 
@@ -20,15 +22,18 @@ const navigationElement = headerElement.querySelector('.trip-controls__navigatio
 const tripMainElement = headerElement.querySelector('.trip-main');
 const tripFilterElement = headerElement.querySelector('.trip-controls__filters');
 const tripEventsElement = mainElement.querySelector('.trip-events');
+const statsContainerElement = mainElement.querySelector('.page-body__container');
 
 const pointsModel = new PointsModel();
 pointsModel.points = events;
 
 const filterModel = new FilterModel();
 
+const siteMenuComponent = new SiteMenuView();
+
 const renderHeader = (points) => {
 
-  render(navigationElement, new SiteMenuView, RenderPosition.BEFOREEND);
+  render(navigationElement, siteMenuComponent, RenderPosition.BEFOREEND);
 
   if (points.length !== 0) {
     render(tripMainElement, new TripInfoView(points), RenderPosition.AFTERBEGIN);
@@ -37,12 +42,40 @@ const renderHeader = (points) => {
 
 const filterPresenter = new FilterPresenter(tripFilterElement, filterModel, pointsModel);
 const tripPresenter = new TripPresenter(tripEventsElement, pointsModel, filterModel);
+const statsComponent = new StatView(pointsModel);
 
 renderHeader(events);
 filterPresenter.init();
 tripPresenter.init();
+render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
+
+
+const handlePointNewFormClose = () => {
+  document.querySelector('.trip-main__event-add-btn').disabled = false;
+  // siteMenuComponent.setMenuItem(MenuItem.TABLE);
+};
 
 document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
   evt.preventDefault();
-  tripPresenter.createPoint();
+  tripPresenter.destroy();
+  filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
+  tripPresenter.init();
+  tripPresenter.createPoint(handlePointNewFormClose);
 });
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      // Показать доску
+      tripPresenter.init();
+      // Скрыть статистику
+      break;
+    case MenuItem.STATS:
+      // Скрыть доску
+      tripPresenter.destroy();
+      // Показать статистику
+      break;
+  }
+};
+
+siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);

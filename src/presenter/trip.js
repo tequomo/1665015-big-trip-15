@@ -26,13 +26,14 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
 
     this._pointNewPresenter = new PointNewPresenter(this._eventsListComponent, this._handleViewAction);
   }
 
   init() {
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderTrip();
   }
 
@@ -76,10 +77,18 @@ export default class Trip {
     render(this._tripEventsContainer, this._eventsListComponent, RenderPosition.BEFOREEND);
   }
 
-  createPoint() {
+  createPoint(callback) {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
-    this._pointNewPresenter.init();
+    this._pointNewPresenter.init(callback);
+    document.querySelector('.trip-main__event-add-btn').disabled = true;
+  }
+
+  destroy() {
+    this._clearTrip({resetSortType: true});
+
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   _handleModeChange() {
