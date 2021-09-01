@@ -2,7 +2,7 @@ import SiteMenuView from './view/site-menu.js';
 import TripInfoView from './view/trip-info.js';
 import { generateEvents } from './mock/points.js';
 import { sortByKey } from './utils/utils.js';
-import { render, RenderPosition } from './utils/render.js';
+import { remove, render, RenderPosition } from './utils/render.js';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter.js';
 import PointsModel from './model/points.js';
@@ -47,7 +47,7 @@ const statsComponent = new StatView(pointsModel.points);
 renderHeader(events);
 filterPresenter.init();
 tripPresenter.init();
-render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
+// render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
 
 
 const handlePointNewFormClose = () => {
@@ -68,11 +68,16 @@ const handleSiteMenuClick = (menuItem) => {
     case MenuItem.TABLE:
       tripPresenter.init();
       // Скрыть статистику
-      // statsComponent.removeElement();
+      remove(statsComponent);
+      document.querySelector('.trip-main__event-add-btn').disabled = false;
+      [...document.querySelectorAll('.trip-filters__filter-input')].map((input) => input.disabled = false);
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
       // Показать статистику
+      render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
+      document.querySelector('.trip-main__event-add-btn').disabled = true;
+      [...document.querySelectorAll('.trip-filters__filter-input')].map((input) => input.disabled = true);
       break;
   }
 };
