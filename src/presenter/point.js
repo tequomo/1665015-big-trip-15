@@ -38,6 +38,7 @@ export default class Point {
     this._pointAddEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointAddEditComponent.setButtonClickHandler(this._handleButtonEditClick);
     this._pointAddEditComponent.setButtonDeleteClickHandler(this._handleButtonDeleteClick);
+    this._pointAddEditComponent.setPriceChangeHandler();
 
     if(prevPointComponent === null || prevPointAddEditComponent === null) {
       render(this._pointContainer, this._pointComponent, RenderPosition.BEFOREEND);

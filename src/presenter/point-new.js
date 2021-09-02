@@ -12,13 +12,15 @@ export default class PointNew {
     this._pointAddEditComponent = null;
     this._formState = FormState.ADD;
     this._point = NEW_POINT;
+    this._unsetCallback = null;
 
     this._handleFormSubmit =this._handleFormSubmit.bind(this);
     this._handleButtonCancelClick = this._handleButtonCancelClick.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
   }
 
-  init() {
+  init(callback) {
+    this._unsetCallback = callback;
     if(this._pointAddEditComponent !== null) {
       return;
     }
@@ -42,6 +44,10 @@ export default class PointNew {
     remove(this._pointAddEditComponent);
     this._pointAddEditComponent.removeRangeDatePicker();
     this._pointAddEditComponent = null;
+
+    if(this._unsetCallback !== null) {
+      this._unsetCallback();
+    }
 
     document.removeEventListener('keydown', this._escKeyDownHandler);
   }

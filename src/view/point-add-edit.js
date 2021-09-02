@@ -138,7 +138,7 @@ export default class PointAddEdit extends SmartView {
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._eventTypeChangeHandler = this._eventTypeChangeHandler.bind(this);
     this._eventRangeChangeHandler = this._eventRangeChangeHandler.bind(this);
-    this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._eventPriceChangeHandler = this._eventPriceChangeHandler.bind(this);
     // this._offersChangeHandler = this._offersChangeHandler.bind(this);
 
     this._setInnerHandlers();
@@ -209,7 +209,7 @@ export default class PointAddEdit extends SmartView {
   //   // );
   // }
 
-  _priceChangeHandler(evt) {
+  _eventPriceChangeHandler(evt) {
     this.updateData(
       {
         basePrice: evt.target.value,
@@ -226,7 +226,7 @@ export default class PointAddEdit extends SmartView {
 
   setPriceChangeHandler(callback) {
     this._callback.priceChange = callback;
-    this.getElement().querySelector('.event__input--price').addEventListener('input', this._priceChangeHandler);
+    this.getElement().querySelector('.event__input--price').addEventListener('input', this._eventPriceChangeHandler);
   }
 
   setFormSubmitHandler(callback) {

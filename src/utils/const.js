@@ -34,6 +34,11 @@ export const UpdateType = {
   MAJOR: 'MAJOR',
 };
 
+export const MenuItem = {
+  TABLE: 'Table',
+  STATS: 'Stats',
+};
+
 export const NEW_POINT = {
   'eventType': '',
   'dateFrom': dayjs(),
