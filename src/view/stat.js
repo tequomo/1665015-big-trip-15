@@ -1,17 +1,15 @@
 import SmartView from './smart.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { getCostByType, getColor, getLigthenColors, getPointTypes, getCountByType, getTravelTimeByType } from '../utils/stat.js';
+import { formatDuration } from '../utils/common.js';
+
 
 const BAR_HEIGHT = 55;
 
-const renderMoneyChart = (moneyCtx, points) => {
 
-  const pointTypes = [...new Set(points.map((point) => point.eventType))];
-  const costByType = pointTypes.map((type) => points.filter((point) => point.eventType === type).reduce((sum, point) => sum + point.basePrice, 0)).sort((a, b) => b - a);
-  const randomColors = pointTypes.map(() => `#${Math.random().toString(16).substr(2,6)}`);
-  console.log(pointTypes);
-  console.log(costByType);
-  console.log(randomColors);
+const renderMoneyChart = (moneyCtx, data) => {
+  const {pointTypes, labels, randomColors, randomLightenColors, costByType} = data;
 
   moneyCtx.height = BAR_HEIGHT * pointTypes.length;
 
@@ -19,13 +17,11 @@ const renderMoneyChart = (moneyCtx, points) => {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      // labels: ['TAXI', 'BUS', 'TRAIN', 'SHIP', 'TRANSPORT', 'DRIVE'],
-      labels: pointTypes.map((point) => point.toUpperCase()),
+      labels: labels,
       datasets: [{
         data: costByType,
-        // backgroundColor: '#ffffff',
         backgroundColor: randomColors,
-        hoverBackgroundColor: '#ffffff',
+        hoverBackgroundColor: randomLightenColors,
         anchor: 'start',
       }],
     },
@@ -83,19 +79,20 @@ const renderMoneyChart = (moneyCtx, points) => {
   });
 };
 
-const renderTypeChart = (typeCtx) => {
+const renderTypeChart = (typeCtx, data) => {
+  const {pointTypes, labels, randomColors, randomLightenColors, countByType} = data;
 
-  typeCtx.height = BAR_HEIGHT * 5;
+  typeCtx.height = BAR_HEIGHT * pointTypes.length;
 
   new Chart(typeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: ['TAXI', 'BUS', 'TRAIN', 'SHIP', 'TRANSPORT', 'DRIVE'],
+      labels: labels,
       datasets: [{
-        data: [4, 3, 2, 1, 1, 1],
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
+        data: countByType,
+        backgroundColor: randomColors,
+        hoverBackgroundColor: randomLightenColors,
         anchor: 'start',
       }],
     },
@@ -153,19 +150,20 @@ const renderTypeChart = (typeCtx) => {
   });
 };
 
-const renderTimeSpendChart = (timeCtx) => {
+const renderTimeSpendChart = (timeCtx, data) => {
+  const {pointTypes, labels, randomColors, randomLightenColors, travelTimeByType} = data;
 
-  timeCtx.height = BAR_HEIGHT * 5;
+  timeCtx.height = BAR_HEIGHT * pointTypes.length;
 
   return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: ['TAXI', 'BUS', 'TRAIN', 'SHIP', 'TRANSPORT', 'DRIVE'],
+      labels: labels,
       datasets: [{
-        data: [4, 3, 2, 1, 1, 1],
-        backgroundColor: '#ffffff',
-        hoverBackgroundColor: '#ffffff',
+        data: travelTimeByType,
+        backgroundColor: randomColors,
+        hoverBackgroundColor: randomLightenColors,
         anchor: 'start',
       }],
     },
@@ -178,7 +176,7 @@ const renderTimeSpendChart = (timeCtx) => {
           color: '#000000',
           anchor: 'end',
           align: 'start',
-          formatter: (val) => `${val}x`,
+          formatter: (val) => `${formatDuration(val)}`,
         },
       },
       title: {
@@ -246,8 +244,25 @@ export default class Stat extends SmartView {
   constructor(points) {
     super();
 
+    this._points = points;
+
+    const pointTypes = getPointTypes(this._points);
+    const labels = pointTypes.map((type) => type.toUpperCase());
+    const randomColors = pointTypes.map(() => getColor());
+    const randomLightenColors = getLigthenColors(randomColors);
+    const costByType = getCostByType(pointTypes, this._points);
+    const countByType = getCountByType(pointTypes, this._points);
+    const travelTimeByType = getTravelTimeByType(pointTypes,this._points);
+
+
     this._data = {
-      points,
+      pointTypes,
+      labels,
+      randomColors,
+      randomLightenColors,
+      costByType,
+      countByType,
+      travelTimeByType,
     };
 
     this._moneyChart = null;
@@ -276,13 +291,12 @@ export default class Stat extends SmartView {
       this._timeChart = null;
     }
 
-    const {points, dateFrom, dateTo} = this._data;
     const moneyCtx = this.getElement().querySelector('#money');
     const typeCtx = this.getElement().querySelector('#type');
     const timeCtx = this.getElement().querySelector('#time-spend');
 
-    this._moneyChart = renderMoneyChart(moneyCtx, points);
-    this._typeChart = renderTypeChart(typeCtx, points, dateFrom, dateTo);
-    this._timeChart = renderTimeSpendChart(timeCtx, points);
+    this._moneyChart = renderMoneyChart(moneyCtx, this._data);
+    this._typeChart = renderTypeChart(typeCtx, this._data);
+    this._timeChart = renderTimeSpendChart(timeCtx, this._data);
   }
 }

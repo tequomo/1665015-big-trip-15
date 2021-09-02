@@ -11,6 +11,7 @@ import StatView from './view/stat.js';
 import { FiltersType, MenuItem, UpdateType } from './utils/const.js';
 
 const POINT_COUNT = 20;
+let statsComponent = null;
 
 const events = new Array(POINT_COUNT).fill().map(generateEvents).sort(sortByKey('dateFrom', true));
 
@@ -42,12 +43,10 @@ const renderHeader = (points) => {
 
 const filterPresenter = new FilterPresenter(tripFilterElement, filterModel, pointsModel);
 const tripPresenter = new TripPresenter(tripEventsElement, pointsModel, filterModel);
-const statsComponent = new StatView(pointsModel.points);
 
 renderHeader(events);
 filterPresenter.init();
 tripPresenter.init();
-// render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
 
 
 const handlePointNewFormClose = () => {
@@ -67,14 +66,13 @@ const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
       tripPresenter.init();
-      // Скрыть статистику
       remove(statsComponent);
       document.querySelector('.trip-main__event-add-btn').disabled = false;
       [...document.querySelectorAll('.trip-filters__filter-input')].map((input) => input.disabled = false);
       break;
     case MenuItem.STATS:
       tripPresenter.destroy();
-      // Показать статистику
+      statsComponent = new StatView(pointsModel.points);
       render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
       document.querySelector('.trip-main__event-add-btn').disabled = true;
       [...document.querySelectorAll('.trip-filters__filter-input')].map((input) => input.disabled = true);

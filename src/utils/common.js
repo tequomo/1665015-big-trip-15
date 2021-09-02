@@ -27,6 +27,14 @@ export const getDuration = (point) => {
   return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
 };
 
+export const formatDuration = (time) => {
+  const hours = Math.floor(time / 60);
+  const minutes = time - (hours * 60);
+  const days = Math.floor(hours / 24);
+
+  return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
+};
+
 export const showPointDataHelper = (dateFrom, dateTo) => {
   const eventDate = dayjs(dateFrom).format('YYYY-MM-DD');
   const shortEventDate = dayjs(dateFrom).format('MMM DD');
