@@ -33,6 +33,16 @@ export default class Filter {
     remove(prevFilterComponent);
   }
 
+  disableFilters() {
+    const filters = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
+    [...filters].map((input) => input.disabled = true);
+  }
+
+  enableFilters() {
+    const filters = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
+    [...filters].map((input) => input.disabled = false);
+  }
+
   _handleModelEvent() {
     this.init();
   }

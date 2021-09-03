@@ -24,6 +24,7 @@ const tripMainElement = headerElement.querySelector('.trip-main');
 const tripFilterElement = headerElement.querySelector('.trip-controls__filters');
 const tripEventsElement = mainElement.querySelector('.trip-events');
 const statsContainerElement = mainElement.querySelector('.page-body__container');
+const addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
 const pointsModel = new PointsModel();
 pointsModel.points = events;
@@ -50,11 +51,11 @@ tripPresenter.init();
 
 
 const handlePointNewFormClose = () => {
-  document.querySelector('.trip-main__event-add-btn').disabled = false;
+  addNewEventButton.disabled = false;
   // siteMenuComponent.setMenuItem(MenuItem.TABLE);
 };
 
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+addNewEventButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   tripPresenter.destroy();
   filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
@@ -65,17 +66,17 @@ document.querySelector('.trip-main__event-add-btn').addEventListener('click', (e
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
-      tripPresenter.init();
+      filterPresenter.enableFilters();
+      addNewEventButton.disabled = false;
       remove(statsComponent);
-      document.querySelector('.trip-main__event-add-btn').disabled = false;
-      [...document.querySelectorAll('.trip-filters__filter-input')].map((input) => input.disabled = false);
+      tripPresenter.init();
       break;
     case MenuItem.STATS:
+      filterPresenter.disableFilters();
+      addNewEventButton.disabled = true;
       tripPresenter.destroy();
       statsComponent = new StatView(pointsModel.points);
       render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
-      document.querySelector('.trip-main__event-add-btn').disabled = true;
-      [...document.querySelectorAll('.trip-filters__filter-input')].map((input) => input.disabled = true);
       break;
   }
 };
