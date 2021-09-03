@@ -9,6 +9,7 @@ import PointsModel from './model/points.js';
 import FilterModel from './model/filter.js';
 import StatView from './view/stat.js';
 import { FiltersType, MenuItem, UpdateType } from './utils/const.js';
+import { hidePseudoElement, showPseudoElement } from './utils/common.js';
 
 const POINT_COUNT = 20;
 let statsComponent = null;
@@ -70,6 +71,7 @@ const handleSiteMenuClick = (menuItem) => {
       addNewEventButton.disabled = false;
       remove(statsComponent);
       tripPresenter.init();
+      showPseudoElement();
       break;
     case MenuItem.STATS:
       filterPresenter.disableFilters();
@@ -77,6 +79,7 @@ const handleSiteMenuClick = (menuItem) => {
       tripPresenter.destroy();
       statsComponent = new StatView(pointsModel.points);
       render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
+      hidePseudoElement();
       break;
   }
 };

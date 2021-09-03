@@ -78,3 +78,16 @@ export const sortByDay = sortByKey('dateFrom', true);
 export const sortByDuration = (pointA, pointB) => getEventTimeDiff(pointB) - getEventTimeDiff(pointA);
 
 export const sortByPrice = sortByKey('basePrice');
+
+export const hidePseudoElement = () => {
+  const styleSheet = document.createElement('style');
+  styleSheet.id = 'no-pseudo';
+  styleSheet.innerHTML = '*:after {content: none !important; display: none !important;}';
+  document.body.appendChild (styleSheet);
+};
+
+export const showPseudoElement = () => {
+  const sheetToBeRemoved = document.querySelector('#no-pseudo');
+  const sheetParent = sheetToBeRemoved.parentNode;
+  sheetParent.removeChild(sheetToBeRemoved);
+};
