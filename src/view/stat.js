@@ -1,7 +1,7 @@
 import SmartView from './smart.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { getCostByType, getColor, getLigthenColors, getPointTypes, getCountByType, getTravelTimeByType } from '../utils/stat.js';
+import { getCostByType, getColor, getLigthenColors, getPointTypes, getCountByType, getTravelTimeByType, sortLabelsByIndex } from '../utils/stat.js';
 import { formatDuration } from '../utils/common.js';
 
 
@@ -11,15 +11,17 @@ const BAR_HEIGHT = 55;
 const renderMoneyChart = (moneyCtx, data) => {
   const {pointTypes, labels, randomColors, randomLightenColors, costByType} = data;
 
+  const sortedData = sortLabelsByIndex(labels, costByType);
+
   moneyCtx.height = BAR_HEIGHT * pointTypes.length;
 
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: labels,
+      labels: [...sortedData.keys()],
       datasets: [{
-        data: costByType,
+        data: [...sortedData.values()],
         backgroundColor: randomColors,
         hoverBackgroundColor: randomLightenColors,
         anchor: 'start',
@@ -82,15 +84,17 @@ const renderMoneyChart = (moneyCtx, data) => {
 const renderTypeChart = (typeCtx, data) => {
   const {pointTypes, labels, randomColors, randomLightenColors, countByType} = data;
 
+  const sortedData = sortLabelsByIndex(labels, countByType);
+
   typeCtx.height = BAR_HEIGHT * pointTypes.length;
 
   new Chart(typeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: labels,
+      labels: [...sortedData.keys()],
       datasets: [{
-        data: countByType,
+        data: [...sortedData.values()],
         backgroundColor: randomColors,
         hoverBackgroundColor: randomLightenColors,
         anchor: 'start',
@@ -153,15 +157,17 @@ const renderTypeChart = (typeCtx, data) => {
 const renderTimeSpendChart = (timeCtx, data) => {
   const {pointTypes, labels, randomColors, randomLightenColors, travelTimeByType} = data;
 
+  const sortedData = sortLabelsByIndex(labels, travelTimeByType);
+
   timeCtx.height = BAR_HEIGHT * pointTypes.length;
 
   return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
-      labels: labels,
+      labels: [...sortedData.keys()],
       datasets: [{
-        data: travelTimeByType,
+        data: [...sortedData.values()],
         backgroundColor: randomColors,
         hoverBackgroundColor: randomLightenColors,
         anchor: 'start',

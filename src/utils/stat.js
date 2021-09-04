@@ -19,8 +19,7 @@ export const getCostByType = (types, points) =>
           (point) => point.eventType === type)
         .reduce(
           (sum, point) => sum + point.basePrice, 0),
-    )
-    .sort((a, b) => b - a);
+    );
 
 export const getCountByType = (types, points) =>
   types
@@ -28,8 +27,7 @@ export const getCountByType = (types, points) =>
       (type) => points
         .filter(
           (point) => point.eventType === type).length,
-    )
-    .sort((a, b) => b - a);
+    );
 
 export const getTravelTimeByType = (types, points) =>
   types
@@ -38,5 +36,14 @@ export const getTravelTimeByType = (types, points) =>
         .filter(
           (point) => point.eventType === type)
         .reduce((sum, point) => sum + getEventTimeDiff(point), 0),
-    )
-    .sort((a, b) => b - a);
+    );
+
+export const sortLabelsByIndex = (labels, data) => {
+
+  const temp = {};
+
+  labels.map((label) => temp[label] = data[labels.indexOf(label)]);
+
+  return new Map(Object.entries(temp).sort((a, b) => b[1] - a[1]));
+};
+

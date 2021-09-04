@@ -20,17 +20,17 @@ export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(poin
 
 export const getDuration = (point) => {
   const diffInMinutes = getEventTimeDiff(point);
-  const hours = Math.floor(diffInMinutes / 60);
-  const minutes = diffInMinutes - (hours * 60);
-  const days = Math.floor(hours / 24);
+  const days = Math.floor(diffInMinutes / 3600);
+  const hours = Math.floor((diffInMinutes - (days * 3600)) / 60);
+  const minutes = diffInMinutes - (days * 3600) - (hours * 60);
 
   return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
 };
 
 export const formatDuration = (time) => {
-  const hours = Math.floor(time / 60);
-  const minutes = time - (hours * 60);
-  const days = Math.floor(hours / 24);
+  const days = Math.floor(time / 3600);
+  const hours = Math.floor((time - (days * 3600)) / 60);
+  const minutes = time - (days * 3600) - (hours * 60);
 
   return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
 };
