@@ -1,5 +1,4 @@
 import SiteMenuView from './view/site-menu.js';
-import TripInfoView from './view/trip-info.js';
 import { generateEvents } from './mock/points.js';
 import { sortByKey } from './utils/utils.js';
 import { remove, render, RenderPosition } from './utils/render.js';
@@ -10,6 +9,7 @@ import FilterModel from './model/filter.js';
 import StatView from './view/stat.js';
 import { FiltersType, MenuItem, UpdateType } from './utils/const.js';
 import { hidePseudoElement, showPseudoElement } from './utils/common.js';
+import TripInfoPresenter from './presenter/trip-info.js';
 
 const POINT_COUNT = 20;
 let statsComponent = null;
@@ -34,26 +34,19 @@ const filterModel = new FilterModel();
 
 const siteMenuComponent = new SiteMenuView();
 
-const renderHeader = (points) => {
-
-  render(navigationElement, siteMenuComponent, RenderPosition.BEFOREEND);
-
-  if (points.length !== 0) {
-    render(tripMainElement, new TripInfoView(points), RenderPosition.AFTERBEGIN);
-  }
-};
+const tripInfoPresenter = new TripInfoPresenter(tripMainElement, pointsModel);
 
 const filterPresenter = new FilterPresenter(tripFilterElement, filterModel, pointsModel);
 const tripPresenter = new TripPresenter(tripEventsElement, pointsModel, filterModel);
 
-renderHeader(events);
+render(navigationElement, siteMenuComponent, RenderPosition.BEFOREEND);
+tripInfoPresenter.init();
 filterPresenter.init();
 tripPresenter.init();
 
 
 const handlePointNewFormClose = () => {
   addNewEventButton.disabled = false;
-  // siteMenuComponent.setMenuItem(MenuItem.TABLE);
 };
 
 addNewEventButton.addEventListener('click', (evt) => {
