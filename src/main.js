@@ -10,8 +10,12 @@ import StatView from './view/stat.js';
 import { FiltersType, MenuItem, UpdateType } from './utils/const.js';
 import { hidePseudoElement, showPseudoElement } from './utils/common.js';
 import TripInfoPresenter from './presenter/trip-info.js';
+import Api from './api/api.js';
 
 const POINT_COUNT = 20;
+const URI = 'https://15.ecmascript.pages.academy/big-trip/';
+const AUTHORIZATION = 'Basic mu041popsyo';
+
 let statsComponent = null;
 
 const events = new Array(POINT_COUNT).fill().map(generateEvents).sort(sortByKey('dateFrom', true));
@@ -29,6 +33,12 @@ const addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
 const pointsModel = new PointsModel();
 pointsModel.points = events;
+
+const api = new Api(URI, AUTHORIZATION);
+
+api.getPoints().then((points) => {
+  console.log(points);
+});
 
 const filterModel = new FilterModel();
 
