@@ -1,4 +1,3 @@
-import { UpdateType } from '../utils/const';
 import { remove, render, RenderPosition, replace } from '../utils/render';
 import TripInfoView from '../view/trip-info.js';
 
@@ -41,9 +40,7 @@ export default class TripInfo {
     remove(prevTripInfoComponent);
   }
 
-  _handleModelEvent(updateType) {
-    if (updateType !== UpdateType.PATCH) {
-      this.init();
-    }
+  _handleModelEvent() {
+    this.init();
   }
 }

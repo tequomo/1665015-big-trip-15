@@ -215,7 +215,7 @@ export default class PointAddEdit extends SmartView {
   _eventPriceChangeHandler(evt) {
     this.updateData(
       {
-        basePrice: evt.target.value,
+        basePrice: Number(evt.target.value),
       },
       true,
     );
