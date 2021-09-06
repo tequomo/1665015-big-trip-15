@@ -24,14 +24,16 @@ export default class Point {
     this._handleFavoriteButtonClick = this._handleFavoriteButtonClick.bind(this);
   }
 
-  init(point) {
+  init(point, offersModel, destinationsModel) {
     this._point = point;
+    this._offers = offersModel.offers;
+    this._destinations = destinationsModel.destinations;
 
     const prevPointComponent = this._pointComponent;
     const prevPointAddEditComponent = this._pointAddEditComponent;
 
     this._pointComponent = new PointView(this._point);
-    this._pointAddEditComponent = new PointAddEditView(this._point, this._formState);
+    this._pointAddEditComponent = new PointAddEditView(this._point, this._offers, this._destinations, this._formState);
 
     this._pointComponent.setButtonClickHandler(this._handleButtonPointClick);
     this._pointComponent.setFavoriteButtonClickHandler(this._handleFavoriteButtonClick);

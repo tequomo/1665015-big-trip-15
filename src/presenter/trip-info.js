@@ -12,7 +12,9 @@ export default class TripInfo {
   }
 
   init() {
-    this._points = this._pointsModel.points;
+    this._points = this._pointsModel.getPoints();
+    // console.log(this._points);
+
     if (this._points.length === 0) {
       if(this._tripInfoComponent) {
         remove(this._tripInfoComponent);

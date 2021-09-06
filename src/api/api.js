@@ -1,6 +1,14 @@
+import PointsModel from '../model/points.js';
+
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+};
+
+const DataPath = {
+  POINTS: 'points',
+  DESTINATIONS: 'destinations',
+  OFFERS: 'offers',
 };
 
 export default class Api {
@@ -10,18 +18,38 @@ export default class Api {
   }
 
   getPoints() {
-    return this._load({url: 'points'})
+    return this._load({url: DataPath.POINTS})
+      .then(Api.toJSON)
+      .then((points) => points.map(PointsModel.adaptToClient));
+  }
+
+  getOffers() {
+    return this._load({url: DataPath.OFFERS})
       .then(Api.toJSON);
+  }
+
+  getDestinations() {
+    return this._load({url: DataPath.DESTINATIONS})
+      .then(Api.toJSON);
+  }
+
+  getInitData() {
+    return Promise.all([
+      this.getPoints().catch((err) => { throw new Error(err);}),
+      this.getOffers().catch((err) => { throw new Error(err);}),
+      this.getDestinations().catch((err) => { throw new Error(err);}),
+    ]);
   }
 
   updatePoint(point) {
     return this._load({
-      url: `point/${point.id}`,
+      url: `${DataPath.POINTS}/${point.id}`,
       method: Method.PUT,
-      body: JSON.stringify(point),
+      body: JSON.stringify(PointsModel.adaptToServer(point)),
       headers: new Headers({'Content-Type': 'application/json'}),
     })
-      .then(Api.toJSON);
+      .then(Api.toJSON)
+      .then(PointsModel.adaptToClient);
   }
 
   _load({

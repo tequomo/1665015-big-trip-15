@@ -2,8 +2,8 @@ import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import rangePlugin from '../../node_modules/flatpickr/dist/plugins/rangePlugin';
 import { getAvailableOffers } from '../mock/points.js';
-import { mockOffers as ALLOFFERS } from '../mock/offers.js';
-import { mockDestinations as ALLDESTINATIONS } from '../mock/destinations.js';
+// import { mockOffers as ALLOFFERS } from '../mock/offers.js';
+// import { mockDestinations as ALLDESTINATIONS } from '../mock/destinations.js';
 import { capitalize } from '../utils/utils.js';
 import SmartView from './smart.js';
 import { FormState } from '../utils/const.js';
@@ -38,7 +38,7 @@ const showDestination = ({description = '', pictures = ''}) =>
     </div>` : ''}
   </section>`;
 
-const generateEventTypesList = (type) => `${ALLOFFERS
+const generateEventTypesList = (type, offers) => `${offers
   .map((offer) =>
     `<div class="event__type-item">
       <input id="event-type-${offer.type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${offer.type}"${(offer.type === type.toLowerCase()) ? 'checked' : ''}>
@@ -49,7 +49,7 @@ const generateEventTypesList = (type) => `${ALLOFFERS
 }`;
 
 
-const generateDestinationlist = () => `${ALLDESTINATIONS
+const generateDestinationlist = (destinations) => `${destinations
   .map((destination) =>
     `<option value="${destination.name}"></option>`,
   )
@@ -59,11 +59,11 @@ const generateDestinationlist = () => `${ALLDESTINATIONS
 const getDestination = (name, destinations) => (destinations.find((destination) => destination.name === name));
 
 
-const createAddEditPointTemplate = (point, state) => {
+const createAddEditPointTemplate = (point, offers, destinations, state) => {
   const {basePrice, dateFrom, dateTo, eventType, eventOffers, destination} = point;
 
-  const allPointOffers = eventType ? getAvailableOffers(eventType, ALLOFFERS) : [];
-  const destinationInfo = getDestination(destination.name, ALLDESTINATIONS) || {};
+  const allPointOffers = eventType ? getAvailableOffers(eventType, offers) : [];
+  const destinationInfo = getDestination(destination.name, destinations) || {};
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -79,7 +79,7 @@ const createAddEditPointTemplate = (point, state) => {
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
 
-              ${generateEventTypesList(eventType)}
+              ${generateEventTypesList(eventType, offers)}
 
             </fieldset>
           </div>
@@ -91,7 +91,7 @@ const createAddEditPointTemplate = (point, state) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1" >
           <datalist id="destination-list-1">
-            ${generateDestinationlist()}
+            ${generateDestinationlist(destinations)}
           </datalist>
         </div>
 
@@ -127,11 +127,13 @@ const createAddEditPointTemplate = (point, state) => {
 };
 
 export default class PointAddEdit extends SmartView {
-  constructor(point, state) {
+  constructor(point, offers, destinations, state) {
     super();
     this._data = PointAddEdit.parsePointToData(point);
     this._rangeDatepicker = null;
     this._state = state;
+    this._offers = offers;
+    this._destinations = destinations;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._buttonClickHandler = this._buttonClickHandler.bind(this);
     this._buttonDeleteClickHandler = this._buttonDeleteClickHandler.bind(this);
@@ -144,7 +146,7 @@ export default class PointAddEdit extends SmartView {
   }
 
   getTemplate() {
-    return createAddEditPointTemplate(this._data, this._state);
+    return createAddEditPointTemplate(this._data, this._offers, this._destinations, this._state);
   }
 
   removeElement() {
@@ -169,7 +171,7 @@ export default class PointAddEdit extends SmartView {
   }
 
   _destinationChangeHandler(evt) {
-    const destination = getDestination(evt.target.value, ALLDESTINATIONS);
+    const destination = getDestination(evt.target.value, this._destinations);
     this.updateData(
       {
         destination,
@@ -200,7 +202,7 @@ export default class PointAddEdit extends SmartView {
       return;
     }
 
-    const availableOffers = getAvailableOffers(this._data.eventType, ALLOFFERS);
+    const availableOffers = getAvailableOffers(this._data.eventType, this._offers);
     const selectedOffers = this.getElement().querySelectorAll('.event__offer-checkbox:checked');
 
     const offers = availableOffers.filter((offer) => [...selectedOffers].find((item) => offer.title === item.dataset.offerTitle));

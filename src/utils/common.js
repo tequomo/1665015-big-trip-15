@@ -8,6 +8,7 @@ export const Messages = {
   [FiltersType.DEFAULT]: 'Click New Event to create your first point',
   [FiltersType.PAST]: 'There are no past events now',
   [FiltersType.FUTURE]: 'There are no future events now',
+  LOADING: 'Loading...',
 };
 
 export const filter = {
