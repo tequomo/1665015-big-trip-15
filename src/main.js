@@ -1,6 +1,4 @@
 import SiteMenuView from './view/site-menu.js';
-// import { generateEvents } from './mock/points.js';
-// import { sortByKey } from './utils/utils.js';
 import { remove, render, RenderPosition } from './utils/render.js';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter.js';
@@ -14,13 +12,10 @@ import Api from './api/api.js';
 import OffersModel from './model/offers.js';
 import DestinationsModel from './model/destinations.js';
 
-// const POINT_COUNT = 20;
-const URI = 'https://14.ecmascript.pages.academy/big-trip/';
+const URI = 'https://15.ecmascript.pages.academy/big-trip/';
 const AUTHORIZATION = 'Basic mu041popsyo';
 
 let statsComponent = null;
-
-// const events = new Array(POINT_COUNT).fill().map(generateEvents).sort(sortByKey('dateFrom', true));
 
 const bodyElement = document.querySelector('.page-body');
 const headerElement = bodyElement.querySelector('.page-header');
@@ -46,19 +41,9 @@ const tripInfoPresenter = new TripInfoPresenter(tripMainElement, pointsModel);
 const filterPresenter = new FilterPresenter(tripFilterElement, filterModel, pointsModel);
 const tripPresenter = new TripPresenter(tripEventsElement, pointsModel, offersModel, destinationsModel, filterModel, api);
 
-// render(navigationElement, siteMenuComponent, RenderPosition.BEFOREEND);
-
 const handlePointNewFormClose = () => {
   addNewEventButton.disabled = false;
 };
-
-addNewEventButton.addEventListener('click', (evt) => {
-  evt.preventDefault();
-  tripPresenter.destroy();
-  filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
-  tripPresenter.init();
-  tripPresenter.createPoint(handlePointNewFormClose);
-});
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -80,19 +65,27 @@ const handleSiteMenuClick = (menuItem) => {
   }
 };
 
+const startApp = () => {
+  tripInfoPresenter.init();
+  filterPresenter.init();
+  render(navigationElement, siteMenuComponent, RenderPosition.BEFOREEND);
+  siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+  tripPresenter.init();
 
-filterPresenter.init();
-tripPresenter.init();
+  addNewEventButton.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    tripPresenter.destroy();
+    filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
+    tripPresenter.init();
+    tripPresenter.createPoint(handlePointNewFormClose);
+  });
+};
 
 api.getInitData()
   .then(([points, offers, destinations]) => {
+    offersModel.setOffers(offers);
+    destinationsModel.setDestinations(destinations);
     pointsModel.setPoints(UpdateType.INIT, points);
-    offersModel.offers = offers;
-    // console.log(destinations);
-    destinationsModel.destinations = destinations;
-    tripInfoPresenter.init();
-    render(navigationElement, siteMenuComponent, RenderPosition.BEFOREEND);
-    siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
   })
   .catch(() => {
     pointsModel.setPoints(UpdateType.INIT, []);
@@ -100,4 +93,6 @@ api.getInitData()
     siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
   });
 
-// siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
+
+startApp();
+

@@ -1,22 +1,21 @@
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import rangePlugin from '../../node_modules/flatpickr/dist/plugins/rangePlugin';
-import { getAvailableOffers } from '../mock/points.js';
-// import { mockOffers as ALLOFFERS } from '../mock/offers.js';
-// import { mockDestinations as ALLDESTINATIONS } from '../mock/destinations.js';
 import { capitalize } from '../utils/utils.js';
 import SmartView from './smart.js';
 import { FormState } from '../utils/const.js';
+import { getUniqueMarkupName } from '../utils/common.js';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
+const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type.toLowerCase() === type.toLowerCase())).offers;
 
 const showOffers = (availableOffers, selectedOffers) =>
   `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     <div class="event__available-offers">${availableOffers.map((offer) => `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').pop()}-1" type="checkbox" name="event-offer-${offer.title.split(' ').pop()}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''} data-offer-title="${offer.title}" data-offer-price="${offer.price}">
-    <label class="event__offer-label" for="event-offer-${offer.title.split(' ').pop()}-1">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getUniqueMarkupName(offer.title)}-1" type="checkbox" name="event-offer-${getUniqueMarkupName(offer.title)}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''} data-offer-title="${offer.title}" data-offer-price="${offer.price}">
+    <label class="event__offer-label" for="event-offer-${getUniqueMarkupName(offer.title)}-1">
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
@@ -127,13 +126,16 @@ const createAddEditPointTemplate = (point, offers, destinations, state) => {
 };
 
 export default class PointAddEdit extends SmartView {
-  constructor(point, offers, destinations, state) {
+  constructor(point, offersModel, destinationsModel, state) {
     super();
     this._data = PointAddEdit.parsePointToData(point);
     this._rangeDatepicker = null;
     this._state = state;
-    this._offers = offers;
-    this._destinations = destinations;
+
+    this._offers = offersModel.getOffers();
+    this._destinations = destinationsModel.getDestinations();
+
+
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._buttonClickHandler = this._buttonClickHandler.bind(this);
     this._buttonDeleteClickHandler = this._buttonDeleteClickHandler.bind(this);
@@ -176,6 +178,7 @@ export default class PointAddEdit extends SmartView {
       {
         destination,
       },
+      true,
     );
   }
 
@@ -184,6 +187,7 @@ export default class PointAddEdit extends SmartView {
       {
         eventType: evt.target.value,
       },
+      true,
     );
   }
 
@@ -193,7 +197,7 @@ export default class PointAddEdit extends SmartView {
         dateFrom: userDateFrom,
         dateTo: userDateTo,
       },
-      // true,
+      true,
     );
   }
 
@@ -211,6 +215,7 @@ export default class PointAddEdit extends SmartView {
       {
         eventOffers: offers,
       },
+      true,
     );
   }
 

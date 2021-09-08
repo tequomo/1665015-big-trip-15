@@ -29,9 +29,9 @@ export const getDuration = (point) => {
 };
 
 export const formatDuration = (time) => {
-  const days = Math.floor(time / 3600);
-  const hours = Math.floor((time - (days * 3600)) / 60);
-  const minutes = time - (days * 3600) - (hours * 60);
+  const days = Math.floor(time / 1440);
+  const hours = Math.floor((time - (days * 1440)) / 60);
+  const minutes = time - (days * 1440) - (hours * 60);
 
   return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
 };
@@ -47,7 +47,7 @@ export const showPointDataHelper = (dateFrom, dateTo) => {
   return [eventDate, shortEventDate, startTime, shortStartTime, endTime, shortEndTime];
 };
 
-export const getTrevelTime = (points) => {
+export const getTravelTime = (points) => {
   const startDateRaw = dayjs(points[0].dateFrom);
   const endDateRaw = dayjs([...points].pop().dateTo);
   const startDate = dayjs(startDateRaw).format('MMM DD');
@@ -92,3 +92,5 @@ export const showPseudoElement = () => {
   const sheetParent = sheetToBeRemoved.parentNode;
   sheetParent.removeChild(sheetToBeRemoved);
 };
+
+export const getUniqueMarkupName = (title) => title.split(' ').slice(-2).join('-').toLowerCase();

@@ -6,11 +6,11 @@ export default class Destinations extends AbstractObserver {
     this._destinations = [];
   }
 
-  set destinations(destinations) {
-    this._destinations = destinations.slice();
+  setDestinations(destinations) {
+    this._destinations = destinations;
   }
 
-  get destinations() {
+  getDestinations() {
     return this._destinations;
   }
 }

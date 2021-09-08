@@ -19,8 +19,8 @@ export default class Trip {
     this._pointPresenter = new Map();
     this._filterType = FiltersType.DEFAULT;
     this._currentSortType = SortType.DEFAULT;
-    // ?????
-    this._loading = 'LOADING';
+
+    this._loadingState = 'LOADING';
     this._isLoading = true;
 
     this._sortComponent = null;
@@ -33,7 +33,7 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
 
-    this._pointNewPresenter = new PointNewPresenter(this._eventsListComponent, this._handleViewAction);
+    this._pointNewPresenter = new PointNewPresenter(this._eventsListComponent, this._handleViewAction, offersModel, destinationsModel);
   }
 
   init() {
@@ -59,8 +59,8 @@ export default class Trip {
   }
 
   _renderPoint (point) {
-    const pointPresenter = new PointPresenter(this._eventsListComponent, this._handleViewAction, this._handleModeChange);
-    pointPresenter.init(point, this._offersModel, this._destinationsModel);
+    const pointPresenter = new PointPresenter(this._eventsListComponent, this._handleViewAction, this._handleModeChange, this._offersModel, this._destinationsModel);
+    pointPresenter.init(point);
     this._pointPresenter.set(point.id, pointPresenter);
   }
 
@@ -80,7 +80,7 @@ export default class Trip {
   }
 
   _renderLoading() {
-    this._messageComponent = new MessageView(this._loading);
+    this._messageComponent = new MessageView(this._loadingState);
     render(this._tripEventsContainer, this._messageComponent, RenderPosition.BEFOREEND);
   }
 

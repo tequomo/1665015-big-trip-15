@@ -6,11 +6,11 @@ export default class Offers extends AbstractObserver {
     this._offers = [];
   }
 
-  set offers(offers) {
-    this._offers = offers.slice();
+  setOffers(offers) {
+    this._offers = offers;
   }
 
-  get offers() {
+  getOffers() {
     return this._offers;
   }
 }
