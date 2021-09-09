@@ -277,7 +277,7 @@ export default class PointAddEdit extends SmartView {
     this.setRangeDatepicker();
     this.setPriceChangeHandler();
     this.setFormSubmitHandler(this._callback.formSubmit);
-    if(this.getElement().querySelector('event__rollup-btn')) {
+    if(this._state === FormState.DEFAULT) {
       this.setButtonClickHandler(this._callback.buttonClick);
     }
     this.setButtonDeleteClickHandler(this._callback.buttonDeleteClick);
