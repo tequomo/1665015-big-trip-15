@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { FormState, NEW_POINT, UpdateType, UserAction } from '../utils/const.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { isEscEvent } from '../utils/utils.js';
@@ -59,11 +58,7 @@ export default class PointNew {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      Object.assign(
-        {
-          id: nanoid(),
-        },
-        point),
+      point,
     );
     this.destroy();
   }
