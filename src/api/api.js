@@ -35,10 +35,11 @@ export default class Api {
 
   getInitData() {
     return Promise.all([
-      this.getPoints().catch((err) => { throw new Error(err);}),
-      this.getOffers().catch((err) => { throw new Error(err);}),
-      this.getDestinations().catch((err) => { throw new Error(err);}),
-    ]);
+      this.getPoints(),
+      this.getOffers(),
+      this.getDestinations(),
+    ])
+      .catch((err) => { throw new Error(err);});
   }
 
   updatePoint(point) {
