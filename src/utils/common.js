@@ -44,8 +44,10 @@ export const showPointDataHelper = (dateFrom, dateTo) => {
 };
 
 export const getTravelTime = (points) => {
-  const startDateRaw = dayjs(points[0].dateFrom);
-  const endDateRaw = dayjs([...points].pop().dateTo);
+  const sortedByDateFrom = points.slice().sort((a, b) => a.dateFrom - b.dateFrom);
+  const sortedByDateTo = points.slice().sort((a, b) => a.dateTo - b.dateTo);
+  const startDateRaw = dayjs(sortedByDateFrom[0].dateFrom);
+  const endDateRaw = dayjs([...sortedByDateTo].pop().dateTo);
   const startDate = dayjs(startDateRaw).format('MMM DD');
   const endDate = (
     dayjs(startDateRaw).month() === dayjs(endDateRaw).month() ?
