@@ -178,7 +178,6 @@ export default class PointAddEdit extends SmartView {
       {
         destination,
       },
-      true,
     );
   }
 
@@ -187,7 +186,6 @@ export default class PointAddEdit extends SmartView {
       {
         eventType: evt.target.value,
       },
-      true,
     );
   }
 
