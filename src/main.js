@@ -12,7 +12,7 @@ import Api from './api/api.js';
 import OffersModel from './model/offers.js';
 import DestinationsModel from './model/destinations.js';
 
-const URI = 'https://15.ecmascript.pages.academy/big-trip/';
+const URI = 'https://14.ecmascript.pages.academy/big-trip/';
 const AUTHORIZATION = 'Basic mu041popsyo';
 
 let statsComponent = null;

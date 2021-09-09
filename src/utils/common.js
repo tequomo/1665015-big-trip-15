@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
+import durationPlugin from 'dayjs/plugin/duration';
 import { sortByKey } from './utils.js';
 import { FiltersType } from './const.js';
+
+dayjs.extend(durationPlugin);
 
 const SHOWN_POINTS = 3;
 
@@ -17,23 +20,16 @@ export const filter = {
   [FiltersType.PAST]: (points) => points.filter((point) => (point.dateTo < dayjs()) || point.dateFrom < dayjs() & dayjs() < point.dateTo),
 };
 
-export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(point.dateFrom), 'minutes');
+export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(point.dateFrom));
+
+export const formatDuration = (time) => {
+  const durationObject = dayjs.duration(time);
+  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days()  ? '' : 'HH[H]'} mm[M]`);
+};
 
 export const getDuration = (point) => {
   const diffInMinutes = getEventTimeDiff(point);
-  const days = Math.floor(diffInMinutes / 3600);
-  const hours = Math.floor((diffInMinutes - (days * 3600)) / 60);
-  const minutes = diffInMinutes - (days * 3600) - (hours * 60);
-
-  return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
-};
-
-export const formatDuration = (time) => {
-  const days = Math.floor(time / 1440);
-  const hours = Math.floor((time - (days * 1440)) / 60);
-  const minutes = time - (days * 1440) - (hours * 60);
-
-  return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
+  return formatDuration(diffInMinutes);
 };
 
 export const showPointDataHelper = (dateFrom, dateTo) => {
