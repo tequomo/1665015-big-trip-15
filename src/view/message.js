@@ -1,8 +1,8 @@
 import { Messages } from '../utils/common.js';
 import AbstractView from './abstract.js';
 
-const createMessageTemplate = (filterType) => (
-  `<p class="trip-events__msg">${Messages[filterType]}
+const createMessageTemplate = (option) => (
+  `<p class="trip-events__msg">${Messages[option]}
   </p>`
 );
 

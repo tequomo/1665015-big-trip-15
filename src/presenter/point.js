@@ -6,10 +6,13 @@ import { FormState, Mode, UpdateType, UserAction } from '../utils/const.js';
 import { isDatesEqual } from '../utils/common.js';
 
 export default class Point {
-  constructor(pointContainer, changeData, changeMode) {
+  constructor(pointContainer, changeData, changeMode, offersModel, destinationsModel) {
     this._pointContainer = pointContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
+
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
 
     this._pointComponent = null;
     this._pointAddEditComponent = null;
@@ -31,7 +34,7 @@ export default class Point {
     const prevPointAddEditComponent = this._pointAddEditComponent;
 
     this._pointComponent = new PointView(this._point);
-    this._pointAddEditComponent = new PointAddEditView(this._point, this._formState);
+    this._pointAddEditComponent = new PointAddEditView(this._point, this._offersModel, this._destinationsModel, this._formState);
 
     this._pointComponent.setButtonClickHandler(this._handleButtonPointClick);
     this._pointComponent.setFavoriteButtonClickHandler(this._handleFavoriteButtonClick);

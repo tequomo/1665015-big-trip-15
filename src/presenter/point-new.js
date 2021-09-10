@@ -5,9 +5,12 @@ import { isEscEvent } from '../utils/utils.js';
 import PointAddEditView from '../view/point-add-edit.js';
 
 export default class PointNew {
-  constructor(pointContainer, changeData) {
+  constructor(pointContainer, changeData, offersModel, destinationsModel) {
     this._pointContainer = pointContainer;
     this._changeData = changeData;
+
+    this._offersModel = offersModel;
+    this._destinationsModel = destinationsModel;
 
     this._pointAddEditComponent = null;
     this._formState = FormState.ADD;
@@ -25,7 +28,7 @@ export default class PointNew {
       return;
     }
 
-    this._pointAddEditComponent = new PointAddEditView(this._point, this._formState);
+    this._pointAddEditComponent = new PointAddEditView(this._point, this._offersModel, this._destinationsModel, this._formState);
     this._pointAddEditComponent.setRangeDatepicker();
     this._pointAddEditComponent.setPriceChangeHandler();
     this._pointAddEditComponent.setFormSubmitHandler(this._handleFormSubmit);

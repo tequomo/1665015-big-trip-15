@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
+import durationPlugin from 'dayjs/plugin/duration';
 import { sortByKey } from './utils.js';
 import { FiltersType } from './const.js';
+
+dayjs.extend(durationPlugin);
 
 const SHOWN_POINTS = 3;
 
@@ -8,6 +11,7 @@ export const Messages = {
   [FiltersType.DEFAULT]: 'Click New Event to create your first point',
   [FiltersType.PAST]: 'There are no past events now',
   [FiltersType.FUTURE]: 'There are no future events now',
+  LOADING: 'Loading...',
 };
 
 export const filter = {
@@ -16,23 +20,16 @@ export const filter = {
   [FiltersType.PAST]: (points) => points.filter((point) => (point.dateTo < dayjs()) || point.dateFrom < dayjs() & dayjs() < point.dateTo),
 };
 
-export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(point.dateFrom), 'minutes');
+export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(point.dateFrom));
+
+export const formatDuration = (time) => {
+  const durationObject = dayjs.duration(time);
+  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days()  ? '' : 'HH[H]'} mm[M]`);
+};
 
 export const getDuration = (point) => {
   const diffInMinutes = getEventTimeDiff(point);
-  const hours = Math.floor(diffInMinutes / 60);
-  const minutes = diffInMinutes - (hours * 60);
-  const days = Math.floor(hours / 24);
-
-  return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
-};
-
-export const formatDuration = (time) => {
-  const hours = Math.floor(time / 60);
-  const minutes = time - (hours * 60);
-  const days = Math.floor(hours / 24);
-
-  return `${(days !== 0) ? `${days}D` : ''} ${(hours !== 0) ? `${hours}H` : ''} ${minutes}M`;
+  return formatDuration(diffInMinutes);
 };
 
 export const showPointDataHelper = (dateFrom, dateTo) => {
@@ -46,9 +43,11 @@ export const showPointDataHelper = (dateFrom, dateTo) => {
   return [eventDate, shortEventDate, startTime, shortStartTime, endTime, shortEndTime];
 };
 
-export const getTrevelTime = (points) => {
-  const startDateRaw = dayjs(points[0].dateFrom);
-  const endDateRaw = dayjs([...points].pop().dateTo);
+export const getTravelTime = (points) => {
+  const sortedByDateFrom = points.slice().sort((a, b) => a.dateFrom - b.dateFrom);
+  const sortedByDateTo = points.slice().sort((a, b) => a.dateTo - b.dateTo);
+  const startDateRaw = dayjs(sortedByDateFrom[0].dateFrom);
+  const endDateRaw = dayjs([...sortedByDateTo].pop().dateTo);
   const startDate = dayjs(startDateRaw).format('MMM DD');
   const endDate = (
     dayjs(startDateRaw).month() === dayjs(endDateRaw).month() ?
@@ -78,3 +77,18 @@ export const sortByDay = sortByKey('dateFrom', true);
 export const sortByDuration = (pointA, pointB) => getEventTimeDiff(pointB) - getEventTimeDiff(pointA);
 
 export const sortByPrice = sortByKey('basePrice');
+
+export const hidePseudoElement = () => {
+  const styleSheet = document.createElement('style');
+  styleSheet.id = 'no-pseudo';
+  styleSheet.innerHTML = '*:after {content: none !important; display: none !important;}';
+  document.body.appendChild (styleSheet);
+};
+
+export const showPseudoElement = () => {
+  const sheetToBeRemoved = document.querySelector('#no-pseudo');
+  const sheetParent = sheetToBeRemoved.parentNode;
+  sheetParent.removeChild(sheetToBeRemoved);
+};
+
+export const getUniqueMarkupName = (title) => title.split(' ').slice(-2).join('-').toLowerCase();

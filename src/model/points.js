@@ -6,11 +6,14 @@ export default class Points extends AbstractObserver {
     this._points = [];
   }
 
-  set points(points) {
+  setPoints(updateType, points) {
     this._points = points.slice();
+    // console.log(this._points);
+    this._notify(updateType);
   }
 
-  get points() {
+  getPoints() {
+    // console.log(this._points);
     return this._points;
   }
 
@@ -52,5 +55,52 @@ export default class Points extends AbstractObserver {
     ];
 
     this._notify(updateType);
+  }
+
+  static adaptToClient(point) {
+    const adaptedPoint = Object.assign(
+      {},
+      point,
+      {
+        eventType: point['type'],
+        eventOffers: point['offers'],
+        basePrice: point['base_price'],
+        dateFrom: new Date(point['date_from']),
+        dateTo: new Date(point['date_to']),
+        isFavorite: point['is_favorite'],
+      },
+    );
+    delete adaptedPoint['type'];
+    delete adaptedPoint['offers'];
+    delete adaptedPoint['is_favorite'];
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['base_price'];
+
+    return adaptedPoint;
+  }
+
+  static adaptToServer(point) {
+    const adaptedPoint = Object.assign(
+      {},
+      point,
+      {
+        'date_from': point.dateFrom.toISOString(),
+        'date_to': point.dateTo.toISOString(),
+        'type': point.eventType,
+        'base_price': point.basePrice,
+        'is_favorite': point.isFavorite,
+        'offers': point.eventOffers,
+      },
+    );
+
+    delete adaptedPoint.dateFrom;
+    delete adaptedPoint.dateTo;
+    delete adaptedPoint.basePrice;
+    delete adaptedPoint.isFavorite;
+    delete adaptedPoint.eventType;
+    delete adaptedPoint.eventOffers;
+
+    return adaptedPoint;
   }
 }
