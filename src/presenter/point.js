@@ -2,8 +2,8 @@ import PointView from '../view/point.js';
 import PointAddEditView from '../view/point-add-edit.js';
 import { isEscEvent } from '../utils/utils.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
-import { FormState, Mode, UpdateType, UserAction } from '../utils/const.js';
-import { isDatesEqual } from '../utils/common.js';
+import { FormState, Mode, ProcessingState, UpdateType, UserAction } from '../utils/const.js';
+import { addAnimationCSS, isDatesEqual, removeAnimationCSS } from '../utils/common.js';
 
 export default class Point {
   constructor(pointContainer, changeData, changeMode, offersModel, destinationsModel) {
@@ -43,17 +43,20 @@ export default class Point {
     this._pointAddEditComponent.setButtonDeleteClickHandler(this._handleButtonDeleteClick);
     this._pointAddEditComponent.setPriceChangeHandler();
 
-    if(prevPointComponent === null || prevPointAddEditComponent === null) {
+    if (prevPointComponent === null || prevPointAddEditComponent === null) {
       render(this._pointContainer, this._pointComponent, RenderPosition.BEFOREEND);
       return;
     }
 
-    if(this._mode === Mode.DEFAULT) {
+    if (this._mode === Mode.DEFAULT) {
       replace(this._pointComponent, prevPointComponent);
     }
 
-    if(this._mode === Mode.EDITING) {
-      replace(this._pointAddEditComponent, prevPointAddEditComponent);
+    if (this._mode === Mode.EDITING) {
+      // replace(this._pointAddEditComponent, prevPointAddEditComponent);
+      replace(this._pointComponent, prevPointAddEditComponent);
+      this._mode = Mode.DEFAULT;
+      removeAnimationCSS();
     }
 
     remove(prevPointComponent);
@@ -68,6 +71,38 @@ export default class Point {
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditFormToPoint();
+    }
+  }
+
+  setProcessingState(state) {
+    if (this._mode === Mode.DEFAULT) {
+      return;
+    }
+
+    const resetEditFormState = () => {
+      this._pointAddEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case ProcessingState.SAVING:
+        this._pointAddEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case ProcessingState.DELETING:
+        this._pointAddEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case ProcessingState.ABORTING:
+        this._pointAddEditComponent.shake(resetEditFormState);
+        break;
     }
   }
 
@@ -91,15 +126,18 @@ export default class Point {
       evt.preventDefault();
       this._replaceEditFormToPoint();
       document.removeEventListener('keydown', this._escKeyDownHandler);
+      removeAnimationCSS();
     }
   }
 
   _handleButtonPointClick() {
     this._replacePointToEditForm();
+    addAnimationCSS();
   }
 
   _handleButtonEditClick() {
     this._replaceEditFormToPoint();
+    removeAnimationCSS();
   }
 
   _handleButtonDeleteClick(point) {
@@ -112,14 +150,14 @@ export default class Point {
 
   _handleFormSubmit(update) {
     const isMinorUpdate =
-    !isDatesEqual(this._point.dateFrom, update.dateFrom) ||
-    !isDatesEqual(this._point.dateTo, update.dateTo);
+      !isDatesEqual(this._point.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this._point.dateTo, update.dateTo);
     this._changeData(
       UserAction.UPDATE_POINT,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-    this._replaceEditFormToPoint();
+    // this._replaceEditFormToPoint();
   }
 
   _handleFavoriteButtonClick() {

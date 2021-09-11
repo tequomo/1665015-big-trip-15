@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { removeAnimationCSS } from '../utils/common.js';
 import { FormState, NEW_POINT, UpdateType, UserAction } from '../utils/const.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { isEscEvent } from '../utils/utils.js';
@@ -53,19 +53,35 @@ export default class PointNew {
     }
 
     document.removeEventListener('keydown', this._escKeyDownHandler);
+    removeAnimationCSS();
+  }
+
+  setSaving() {
+    this._pointAddEditComponent.updateData({
+      isDisabling: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetAddFormState = () => {
+      this._pointAddEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._pointAddEditComponent.shake(resetAddFormState);
   }
 
   _handleFormSubmit(point) {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      Object.assign(
-        {
-          id: nanoid(),
-        },
-        point),
+      point,
     );
-    this.destroy();
+    // this.destroy();
   }
 
   _handleButtonCancelClick() {

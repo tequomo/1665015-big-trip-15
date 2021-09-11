@@ -3,8 +3,8 @@ import SortView from '../view/sort.js';
 import MessageView from '../view/message.js';
 import PointPresenter from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
-import { filter, sortByDuration, sortByPrice, sortByDay } from '../utils/common.js';
-import { FiltersType, SortType, UpdateType, UserAction } from '../utils/const.js';
+import { filter, sortByDuration, sortByPrice, sortByDay, addAnimationCSS, removeAnimationCSS } from '../utils/common.js';
+import { FiltersType, SortType, UpdateType, UserAction, ProcessingState as PointPresenterProcessingState } from '../utils/const.js';
 import PointNewPresenter from './point-new.js';
 
 export default class Trip {
@@ -93,6 +93,7 @@ export default class Trip {
     this._filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
     this._pointNewPresenter.init(callback);
     document.querySelector('.trip-main__event-add-btn').disabled = true;
+    addAnimationCSS();
   }
 
   destroy() {
@@ -110,16 +111,35 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch(actionType) {
       case UserAction.UPDATE_POINT:
-        // this._pointsModel.updatePoint(updateType, update);
-        this._api.updatePoint(update).then((response) => {
-          this._pointsModel.updatePoint(updateType, response);
-        });
+        this._pointPresenter.get(update.id).setProcessingState(PointPresenterProcessingState.SAVING);
+        this._api.updatePoint(update)
+          .then((response) => {
+            this._pointsModel.updatePoint(updateType, response);
+          })
+          .catch(() => {
+            this._pointPresenter.get(update.id).setProcessingState(PointPresenterProcessingState.ABORTING);
+          });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType,update);
+        this._pointNewPresenter.setSaving();
+        this._api.addPoint(update)
+          .then((response) => {
+            this._pointsModel.addPoint(updateType, response);
+          })
+          .catch(() => {
+            this._pointNewPresenter.setAborting();
+          });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        this._pointPresenter.get(update.id).setProcessingState(PointPresenterProcessingState.DELETING);
+        this._api.deletePoint(update)
+          .then(() => {
+            this._pointsModel.deletePoint(updateType, update);
+            removeAnimationCSS();
+          })
+          .catch(() => {
+            this._pointPresenter.get(update.id).setProcessingState(PointPresenterProcessingState.ABORTING);
+          });
         break;
     }
   }
