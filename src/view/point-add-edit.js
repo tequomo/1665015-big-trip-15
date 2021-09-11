@@ -10,31 +10,37 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const getAvailableOffers = (type, offers) => (offers.find((offer) => offer.type.toLowerCase() === type.toLowerCase())).offers;
 
-const showOffers = (availableOffers, selectedOffers, isDisabled) =>
-  `<section class="event__section  event__section--offers">
-    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-    <div class="event__available-offers">${availableOffers.map((offer) => `<div class="event__offer-selector">
+const generateOffersList = (availableOffers, selectedOffers, isDisabled) => `
+  <div class="event__available-offers">${availableOffers.map((offer) => `<div class="event__offer-selector">
     <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getUniqueMarkupName(offer.title)}-1" type="checkbox" name="event-offer-${getUniqueMarkupName(offer.title)}" ${(selectedOffers.find((item) => item.title === offer.title)) ? 'checked' : ''} ${isDisabled ? 'disabled' : ''} data-offer-title="${offer.title}" data-offer-price="${offer.price}">
     <label class="event__offer-label" for="event-offer-${getUniqueMarkupName(offer.title)}-1">
-    <span class="event__offer-title">${offer.title}</span>
-    &plus;&euro;&nbsp;
-    <span class="event__offer-price">${offer.price}</span>
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
     </label>
     </div>`).join('\n')}
-    </div>
+  </div>`;
+
+const showOffers = (availableOffers, selectedOffers, type, isDisabled) =>
+  `<section class="event__section  event__section--offers">
+    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+    ${!type ? 'Please select event type for additional offers' : generateOffersList(availableOffers, selectedOffers, isDisabled) }
   </section>`;
 
-const showDestination = ({description = '', pictures = ''}) =>
-  `<section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">${description}</p>
-    ${(pictures.length !== 0) ?
+const generateDestinationInfo = ({description = '', pictures = []}) => `
+  <p class="event__destination-description">${description}</p>
+  ${(pictures.length !== 0) ?
     `<div class="event__photos-container">
       <div class="event__photos-tape">
       ${pictures.map((picture) =>
     `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('\n')}
       </div>
-    </div>` : ''}
+    </div>` : ''}`;
+
+const showDestination = (destination) =>
+  `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      ${!Object.keys(destination).length ? generateDestinationInfo({description: 'Please select the destination for preview', pictures: []}) : generateDestinationInfo(destination)}
   </section>`;
 
 const generateEventTypesList = (type, offers) => `${offers
@@ -96,9 +102,9 @@ const createAddEditPointTemplate = (point, offers, destinations, state) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${eventType}
+            ${eventType ? eventType : 'Select type'}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name || '' }" list="destination-list-1" ${isDisabled ? 'disabled' : ''} placeholder="Select destination">
           <datalist id="destination-list-1">
             ${generateDestinationlist(destinations)}
           </datalist>
@@ -127,9 +133,9 @@ const createAddEditPointTemplate = (point, offers, destinations, state) => {
         </button>` : ''}
       </header>
       <section class="event__details">
-        ${allPointOffers.length && showOffers(allPointOffers, eventOffers, isDisabled) || ''}
+        ${allPointOffers.length && showOffers(allPointOffers, eventOffers, eventType, isDisabled) || `${state === FormState.ADD ? showOffers(allPointOffers, eventOffers, eventType, isDisabled) : ''}`}
 
-        ${Object.keys(destinationInfo).length && showDestination(destinationInfo) || ''}
+        ${Object.keys(destinationInfo).length && showDestination(destinationInfo) || `${state === FormState.ADD ? showDestination(destinationInfo) : ''}`}
       </section>
     </form>
   </li>`;
