@@ -132,3 +132,46 @@ export const removeAnimationCSS =() => {
     sheetParent.removeChild(sheetToBeRemoved);
   }
 };
+
+export const isOnline = () => window.navigator.onLine;
+
+export const addToastCSS = () => {
+  const toastCSS = document.createElement('style');
+  toastCSS.id = 'toast-style';
+  toastCSS.innerHTML = `
+  .toast-container {
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 0.4em;
+    padding-left: 0.4em;
+    width: 100%;
+    height: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    box-sizing: border-box;
+  }
+
+  .toast-item {
+    display: inline-flex;
+    margin-bottom: 0.4em;
+    padding: 0.4em;
+    border-radius: 0.2em;
+    background-color: #fee;
+    color: #900;
+  }
+  `;
+};
+
+export const removeToastCSS =() => {
+  const sheetToBeRemoved = document.querySelector('#toast-style');
+  if(sheetToBeRemoved) {
+    const sheetParent = sheetToBeRemoved.parentNode;
+    sheetParent.removeChild(sheetToBeRemoved);
+  }
+};

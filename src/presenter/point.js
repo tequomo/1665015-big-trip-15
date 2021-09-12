@@ -3,7 +3,8 @@ import PointAddEditView from '../view/point-add-edit.js';
 import { isEscEvent } from '../utils/utils.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
 import { FormState, Mode, ProcessingState, UpdateType, UserAction } from '../utils/const.js';
-import { addAnimationCSS, isDatesEqual, removeAnimationCSS } from '../utils/common.js';
+import { addAnimationCSS, isDatesEqual, isOnline, removeAnimationCSS } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
 
 export default class Point {
   constructor(pointContainer, changeData, changeMode, offersModel, destinationsModel) {
@@ -136,11 +137,19 @@ export default class Point {
   }
 
   _handleButtonEditClick() {
+    if (!isOnline()) {
+      toast('You can\'t edit point offline');
+      return;
+    }
     this._replaceEditFormToPoint();
     removeAnimationCSS();
   }
 
   _handleButtonDeleteClick(point) {
+    if (!isOnline()) {
+      toast('You can\'t delete point offline');
+      return;
+    }
     this._changeData(
       UserAction.DELETE_POINT,
       UpdateType.MINOR,
@@ -149,6 +158,10 @@ export default class Point {
   }
 
   _handleFormSubmit(update) {
+    if (!isOnline()) {
+      toast('You can\'t save point offline');
+      return;
+    }
     const isMinorUpdate =
       !isDatesEqual(this._point.dateFrom, update.dateFrom) ||
       !isDatesEqual(this._point.dateTo, update.dateTo);
