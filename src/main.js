@@ -6,7 +6,7 @@ import PointsModel from './model/points.js';
 import FilterModel from './model/filter.js';
 import StatView from './view/stat.js';
 import { DataPath, FiltersType, MenuItem, UpdateType } from './utils/const.js';
-import { addToastCSS, hidePseudoElement, isOnline, removeToastCSS, showPseudoElement } from './utils/common.js';
+import { addAnimationCSS, addToastCSS, hidePseudoElement, isOnline, showPseudoElement } from './utils/common.js';
 import TripInfoPresenter from './presenter/trip-info.js';
 import Api from './api/api.js';
 import OffersModel from './model/offers.js';
@@ -15,8 +15,8 @@ import Store from './api/store.js';
 import Provider from './api/provider.js';
 import { toast } from './utils/toast.js';
 
-const URI = 'https://14.ecmascript.pages.academy/big-trip/';
-const AUTHORIZATION = 'Basic mu041popsyo';
+const URI = 'https://13.ecmascript.pages.academy/big-trip/';
+const AUTHORIZATION = 'Basic mu041popsyy';
 
 let statsComponent = null;
 
@@ -78,6 +78,8 @@ const startApp = () => {
   render(navigationElement, siteMenuComponent, RenderPosition.BEFOREEND);
   siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
   tripPresenter.init();
+  addToastCSS();
+  addAnimationCSS();
 
   addNewEventButton.addEventListener('click', (evt) => {
     evt.preventDefault();
@@ -113,11 +115,15 @@ window.addEventListener('load', () => {
 
 window.addEventListener('online', () => {
   document.title = document.title.replace(' [offline]', '');
-  removeToastCSS();
+  headerElement.style.backgroundImage = 'url("../img/header-bg.png")';
+  headerElement.style.backgroundColor = '#078ff0';
+  toast('Yoy are currently online ;-)');
   apiWithProvider.sync();
 });
 
 window.addEventListener('offline', () => {
   document.title += ' [offline]';
-  addToastCSS();
+  headerElement.style.backgroundImage = 'none';
+  headerElement.style.backgroundColor = '#96989b';
+  toast('Connection lost. You\'re offline');
 });

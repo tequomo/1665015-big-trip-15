@@ -3,7 +3,7 @@ import SortView from '../view/sort.js';
 import MessageView from '../view/message.js';
 import PointPresenter from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
-import { filter, sortByDuration, sortByPrice, sortByDay, addAnimationCSS, removeAnimationCSS } from '../utils/common.js';
+import { filter, sortByDuration, sortByPrice, sortByDay, removeAnimationCSS } from '../utils/common.js';
 import { FiltersType, SortType, UpdateType, UserAction, ProcessingState as PointPresenterProcessingState } from '../utils/const.js';
 import PointNewPresenter from './point-new.js';
 
@@ -93,7 +93,7 @@ export default class Trip {
     this._filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
     this._pointNewPresenter.init(callback);
     document.querySelector('.trip-main__event-add-btn').disabled = true;
-    addAnimationCSS();
+    // addAnimationCSS();
   }
 
   destroy() {

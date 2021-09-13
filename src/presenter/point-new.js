@@ -1,6 +1,7 @@
-import { removeAnimationCSS } from '../utils/common.js';
+import { isOnline, removeAnimationCSS } from '../utils/common.js';
 import { FormState, NEW_POINT, UpdateType, UserAction } from '../utils/const.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
+import { toast } from '../utils/toast.js';
 import { isEscEvent } from '../utils/utils.js';
 import PointAddEditView from '../view/point-add-edit.js';
 
@@ -76,6 +77,11 @@ export default class PointNew {
   }
 
   _handleFormSubmit(point) {
+    if (!isOnline()) {
+      toast('You can\'t save point offline');
+      this._pointAddEditComponent.shake();
+      return;
+    }
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,

@@ -216,7 +216,7 @@ export default class PointAddEdit extends SmartView {
   }
 
   _checkOffersHandler() {
-    if(!this.getElement().querySelector('.event__section--offers')) {
+    if(!this.getElement().querySelector('.event__available-offers')) {
       return;
     }
 
