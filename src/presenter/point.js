@@ -3,7 +3,8 @@ import PointAddEditView from '../view/point-add-edit.js';
 import { isEscEvent } from '../utils/utils.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
 import { FormState, Mode, ProcessingState, UpdateType, UserAction } from '../utils/const.js';
-import { addAnimationCSS, isDatesEqual, removeAnimationCSS } from '../utils/common.js';
+import { isDatesEqual, isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
 
 export default class Point {
   constructor(pointContainer, changeData, changeMode, offersModel, destinationsModel) {
@@ -56,7 +57,6 @@ export default class Point {
       // replace(this._pointAddEditComponent, prevPointAddEditComponent);
       replace(this._pointComponent, prevPointAddEditComponent);
       this._mode = Mode.DEFAULT;
-      removeAnimationCSS();
     }
 
     remove(prevPointComponent);
@@ -126,21 +126,29 @@ export default class Point {
       evt.preventDefault();
       this._replaceEditFormToPoint();
       document.removeEventListener('keydown', this._escKeyDownHandler);
-      removeAnimationCSS();
     }
   }
 
   _handleButtonPointClick() {
+    if (!isOnline()) {
+      toast('You can\'t edit point offline');
+
+      this._pointComponent.shake();
+      return;
+    }
     this._replacePointToEditForm();
-    addAnimationCSS();
   }
 
   _handleButtonEditClick() {
     this._replaceEditFormToPoint();
-    removeAnimationCSS();
   }
 
   _handleButtonDeleteClick(point) {
+    if (!isOnline()) {
+      toast('You can\'t delete point offline');
+      this._pointAddEditComponent.shake();
+      return;
+    }
     this._changeData(
       UserAction.DELETE_POINT,
       UpdateType.MINOR,
@@ -149,6 +157,11 @@ export default class Point {
   }
 
   _handleFormSubmit(update) {
+    if (!isOnline()) {
+      toast('You can\'t save point offline');
+      this._pointAddEditComponent.shake();
+      return;
+    }
     const isMinorUpdate =
       !isDatesEqual(this._point.dateFrom, update.dateFrom) ||
       !isDatesEqual(this._point.dateTo, update.dateTo);

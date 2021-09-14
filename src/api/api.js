@@ -1,17 +1,6 @@
 import PointsModel from '../model/points.js';
+import { DataPath, Method } from '../utils/const.js';
 
-const Method = {
-  GET: 'GET',
-  PUT: 'PUT',
-  POST: 'POST',
-  DELETE: 'DELETE',
-};
-
-const DataPath = {
-  POINTS: 'points',
-  DESTINATIONS: 'destinations',
-  OFFERS: 'offers',
-};
 
 export default class Api {
   constructor(endPoint, authorization) {
@@ -41,7 +30,7 @@ export default class Api {
       this.getOffers(),
       this.getDestinations(),
     ])
-      .catch((err) => { throw new Error(err);});
+      .catch((err) => {throw new Error(err);});
   }
 
   updatePoint(point) {
@@ -71,6 +60,16 @@ export default class Api {
       url: `${DataPath.POINTS}/${point.id}`,
       method: Method.DELETE,
     });
+  }
+
+  sync(data) {
+    return this._load({
+      url: `${DataPath.POINTS}/${DataPath.SYNC}`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    })
+      .then(Api.toJSON);
   }
 
   _load({

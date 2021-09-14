@@ -46,6 +46,20 @@ export const MenuItem = {
   STATS: 'Stats',
 };
 
+export const DataPath = {
+  POINTS: 'points',
+  DESTINATIONS: 'destinations',
+  OFFERS: 'offers',
+  SYNC: 'sync',
+};
+
+export const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
 export const NEW_POINT = {
   'eventType': '',
   'dateFrom': dayjs(),

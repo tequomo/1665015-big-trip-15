@@ -82,7 +82,7 @@ export const hidePseudoElement = () => {
   const styleSheet = document.createElement('style');
   styleSheet.id = 'no-pseudo';
   styleSheet.innerHTML = '*:after {content: none !important; display: none !important;}';
-  document.body.appendChild (styleSheet);
+  document.body.appendChild(styleSheet);
 };
 
 export const showPseudoElement = () => {
@@ -94,6 +94,10 @@ export const showPseudoElement = () => {
 export const getUniqueMarkupName = (title) => title.split(' ').slice(-2).join('-').toLowerCase();
 
 export const addAnimationCSS = () => {
+  if(document.querySelector('shake-this')) {
+    return;
+  }
+
   const animationCSS = document.createElement('style');
   animationCSS.id = 'shake-this';
   animationCSS.innerHTML = `
@@ -122,11 +126,59 @@ export const addAnimationCSS = () => {
   .shake {
     animation: shake 0.6s;
   }`;
-  document.head.appendChild (animationCSS);
+  document.head.appendChild(animationCSS);
 };
 
 export const removeAnimationCSS =() => {
   const sheetToBeRemoved = document.querySelector('#shake-this');
+  if(sheetToBeRemoved) {
+    const sheetParent = sheetToBeRemoved.parentNode;
+    sheetParent.removeChild(sheetToBeRemoved);
+  }
+};
+
+export const isOnline = () => window.navigator.onLine;
+
+export const addToastCSS = () => {
+  if(document.querySelector('toast-style')) {
+    return;
+  }
+
+  const toastCSS = document.createElement('style');
+  toastCSS.id = 'toast-style';
+
+  toastCSS.innerHTML = `
+  .toast-container {
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 0.4em;
+    padding-left: 0.4em;
+    width: 100%;
+    height: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    box-sizing: border-box;
+  }
+
+  .toast-item {
+    display: inline-flex;
+    margin-bottom: 0.4em;
+    padding: 0.4em;
+    border-radius: 0.2em;
+    background-color: #575a5f;
+    color: #ffffff;
+  }`;
+  document.head.appendChild(toastCSS);
+};
+
+export const removeToastCSS =() => {
+  const sheetToBeRemoved = document.querySelector('#toast-style');
   if(sheetToBeRemoved) {
     const sheetParent = sheetToBeRemoved.parentNode;
     sheetParent.removeChild(sheetToBeRemoved);
