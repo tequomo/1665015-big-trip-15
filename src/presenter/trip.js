@@ -93,7 +93,6 @@ export default class Trip {
     this._filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
     this._pointNewPresenter.init(callback);
     document.querySelector('.trip-main__event-add-btn').disabled = true;
-    // addAnimationCSS();
   }
 
   destroy() {

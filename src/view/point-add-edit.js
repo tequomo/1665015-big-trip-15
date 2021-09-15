@@ -133,7 +133,7 @@ const createAddEditPointTemplate = (point, offers, destinations, state) => {
         </button>` : ''}
       </header>
       <section class="event__details">
-        ${allPointOffers.length && showOffers(allPointOffers, eventOffers, eventType, isDisabled) || `${state === FormState.ADD ? showOffers(allPointOffers, eventOffers, eventType, isDisabled) : ''}`}
+        ${allPointOffers.length && showOffers(allPointOffers, eventOffers, eventType, isDisabled) || `${state === FormState.ADD && eventType === '' ? showOffers(allPointOffers, eventOffers, eventType, isDisabled) : ''}`}
 
         ${Object.keys(destinationInfo).length && showDestination(destinationInfo) || `${state === FormState.ADD ? showDestination(destinationInfo) : ''}`}
       </section>
@@ -190,6 +190,14 @@ export default class PointAddEdit extends SmartView {
 
   _destinationChangeHandler(evt) {
     const destination = getDestination(evt.target.value, this._destinations);
+    const destinationInput = this.getElement().querySelector('.event__input--destination');
+    if(destination === undefined) {
+      destinationInput.setCustomValidity('Unfortunately this place unable for a trip');
+      destinationInput.reportValidity();
+      return;
+    }
+    destinationInput.setCustomValidity('');
+    destinationInput.reportValidity();
     this.updateData(
       {
         destination,
@@ -234,12 +242,15 @@ export default class PointAddEdit extends SmartView {
   }
 
   _eventPriceChangeHandler(evt) {
-    this.updateData(
-      {
-        basePrice: Number(evt.target.value),
-      },
-      true,
-    );
+    const basePrice = Number(evt.target.value);
+    if(basePrice > 0) {
+      this.updateData(
+        {
+          basePrice,
+        },
+        true,
+      );
+    }
   }
 
   _setInnerHandlers() {

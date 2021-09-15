@@ -1,6 +1,7 @@
 import FilterView from '../view/filter.js';
 import { FiltersType, UpdateType } from '../utils/const.js';
 import { remove, render, RenderPosition, replace } from '../utils/render.js';
+import { filter } from '../utils/common.js';
 
 export default class Filter {
   constructor(filtersContainer, filterModel, pointsModel) {
@@ -31,6 +32,17 @@ export default class Filter {
 
     replace(this._filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+
+    const points = this._pointsModel.getPoints();
+    const filterItems = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
+
+    [...filterItems]
+      .map((filterItem) => {
+        const filteredPoints = filter[filterItem.value](points);
+        if(!filteredPoints.length) {
+          filterItem.disabled = true;
+        }
+      });
   }
 
   disableFilters() {
