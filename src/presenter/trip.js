@@ -3,7 +3,7 @@ import SortView from '../view/sort.js';
 import MessageView from '../view/message.js';
 import PointPresenter from './point.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
-import { filter, sortByDuration, sortByPrice, sortByDay, removeAnimationCSS } from '../utils/common.js';
+import { filter, sortByDuration, sortByPrice, sortByDay } from '../utils/common.js';
 import { FiltersType, SortType, UpdateType, UserAction, ProcessingState as PointPresenterProcessingState } from '../utils/const.js';
 import PointNewPresenter from './point-new.js';
 
@@ -134,7 +134,6 @@ export default class Trip {
         this._api.deletePoint(update)
           .then(() => {
             this._pointsModel.deletePoint(updateType, update);
-            removeAnimationCSS();
           })
           .catch(() => {
             this._pointPresenter.get(update.id).setProcessingState(PointPresenterProcessingState.ABORTING);

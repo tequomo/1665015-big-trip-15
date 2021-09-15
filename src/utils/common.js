@@ -6,6 +6,7 @@ import { BrowsingState, FiltersType } from './const.js';
 dayjs.extend(durationPlugin);
 
 const SHOWN_POINTS = 3;
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export const Messages = {
   [FiltersType.DEFAULT]: 'Click New Event to create your first point',
@@ -112,6 +113,12 @@ export const removeInlineCSS = (id) => {
   }
 };
 
+export const StyleId = {
+  PSEUDO: 'hide-pseudo',
+  SHAKE: 'shake-this',
+  TOAST: 'toast-style',
+};
+
 export const StyleContent = {
   PSEUDO: `
   *:after {
@@ -173,97 +180,14 @@ export const StyleContent = {
   }`,
 };
 
-export const addAnimationCSS = () => {
-  if (document.querySelector('#shake-this')) {
-    return;
-  }
-
-  const animationCSS = document.createElement('style');
-  animationCSS.id = 'shake-this';
-  animationCSS.innerHTML = `
-  @keyframes shake {
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-
-    10%,
-    30%,
-    50%,
-    70%,
-    90% {
-      transform: translateX(-5px);
-    }
-
-    20%,
-    40%,
-    60%,
-    80% {
-      transform: translateX(5px);
-    }
-  }
-
-  .shake {
-    animation: shake 0.6s;
-  }`;
-  document.head.appendChild(animationCSS);
-};
-
-export const removeAnimationCSS = () => {
-  const sheetToBeRemoved = document.querySelector('#shake-this');
-  if (sheetToBeRemoved) {
-    const sheetParent = sheetToBeRemoved.parentNode;
-    sheetParent.removeChild(sheetToBeRemoved);
-  }
+export const shakeButton = (element) => {
+  element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+  setTimeout(() => {
+    element.style.animation = '';
+  }, SHAKE_ANIMATION_TIMEOUT);
 };
 
 export const isOnline = () => window.navigator.onLine;
-
-export const addToastCSS = () => {
-  if (document.querySelector('#toast-style')) {
-    return;
-  }
-
-  const toastCSS = document.createElement('style');
-  toastCSS.id = 'toast-style';
-
-  toastCSS.innerHTML = `
-  .toast-container {
-    position: absolute;
-    z-index: 1000;
-    top: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding-top: 0.4em;
-    padding-left: 0.4em;
-    width: 100%;
-    height: 0;
-    font-family: sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    box-sizing: border-box;
-  }
-
-  .toast-item {
-    display: inline-flex;
-    margin-bottom: 0.4em;
-    padding: 0.4em;
-    border-radius: 0.2em;
-    background-color: #575a5f;
-    color: #ffffff;
-  }`;
-  document.head.appendChild(toastCSS);
-};
-
-export const removeToastCSS = () => {
-  const sheetToBeRemoved = document.querySelector('#toast-style');
-  if (sheetToBeRemoved) {
-    const sheetParent = sheetToBeRemoved.parentNode;
-    sheetParent.removeChild(sheetToBeRemoved);
-  }
-};
 
 export const changeHeaderStyle = (element, state) => {
   switch (state) {
