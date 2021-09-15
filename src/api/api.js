@@ -1,6 +1,7 @@
 import PointsModel from '../model/points.js';
 import { DataPath, Method } from '../utils/const.js';
 
+const requestHeaders = new Headers({'Content-Type': 'application/json'});
 
 export default class Api {
   constructor(endPoint, authorization) {
@@ -38,7 +39,7 @@ export default class Api {
       url: `${DataPath.POINTS}/${point.id}`,
       method: Method.PUT,
       body: JSON.stringify(PointsModel.adaptToServer(point)),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: requestHeaders,
     })
       .then(Api.toJSON)
       .then(PointsModel.adaptToClient);
@@ -49,7 +50,7 @@ export default class Api {
       url: DataPath.POINTS,
       method: Method.POST,
       body: JSON.stringify(PointsModel.adaptToServer(point)),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: requestHeaders,
     })
       .then(Api.toJSON)
       .then(PointsModel.adaptToClient);
@@ -67,7 +68,7 @@ export default class Api {
       url: `${DataPath.POINTS}/${DataPath.SYNC}`,
       method: Method.POST,
       body: JSON.stringify(data),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: requestHeaders,
     })
       .then(Api.toJSON);
   }

@@ -39,7 +39,7 @@ export default class Filter {
     [...filterItems]
       .map((filterItem) => {
         const filteredPoints = filter[filterItem.value](points);
-        if(!filteredPoints.length) {
+        if (!filteredPoints.length) {
           filterItem.disabled = true;
         }
       });
@@ -53,18 +53,6 @@ export default class Filter {
   enableFilters() {
     const filters = this._filterComponent.getElement().querySelectorAll('.trip-filters__filter-input');
     [...filters].map((input) => input.disabled = false);
-  }
-
-  _handleModelEvent() {
-    this.init();
-  }
-
-  _handleFilterTypeChange(filterType) {
-    if (this._filterModel.getFilter() === filterType) {
-      return;
-    }
-
-    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 
   _getFilters() {
@@ -82,5 +70,17 @@ export default class Filter {
         name: 'past',
       },
     ];
+  }
+
+  _handleModelEvent() {
+    this.init();
+  }
+
+  _handleFilterTypeChange(filterType) {
+    if (this._filterModel.getFilter() === filterType) {
+      return;
+    }
+
+    this._filterModel.setFilter(UpdateType.MAJOR, filterType);
   }
 }

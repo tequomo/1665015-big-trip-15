@@ -44,24 +44,31 @@ export const showPointDataHelper = (dateFrom, dateTo) => {
   return [eventDate, shortEventDate, startTime, shortStartTime, endTime, shortEndTime];
 };
 
+const sortPointsByDateFrom = (points) => points.slice().sort((a, b) => a.dateFrom - b.dateFrom);
+const sortPointsByDateTo = (points) => points.slice().sort((a, b) => a.dateTo - b.dateTo);
+
 export const getTravelTime = (points) => {
-  const sortedByDateFrom = points.slice().sort((a, b) => a.dateFrom - b.dateFrom);
-  const sortedByDateTo = points.slice().sort((a, b) => a.dateTo - b.dateTo);
-  const startDateRaw = dayjs(sortedByDateFrom[0].dateFrom);
-  const endDateRaw = dayjs([...sortedByDateTo].pop().dateTo);
+  const sortedPointsOnStart = sortPointsByDateFrom(points);
+  const sortedPointsOnEnd = sortPointsByDateTo(points);
+  const startDateRaw = dayjs(sortedPointsOnStart[0].dateFrom);
+  const endDateRaw = dayjs([...sortedPointsOnEnd].pop().dateTo);
   const startDate = dayjs(startDateRaw).format('MMM DD');
   const endDate = (
     dayjs(startDateRaw).month() === dayjs(endDateRaw).month() ?
       dayjs(endDateRaw).format('DD') : dayjs(endDateRaw).format('MMM DD')
   );
+
   return `${startDate}&nbsp;&mdash;&nbsp;${endDate}`;
 };
 
-export const getTripRoute = (points) => (
-  (points.length <= SHOWN_POINTS) ?
-    points.map((point) => point.destination.name).join(' &mdash; ') :
-    `${points[0].destination.name} &mdash; ... &mdash; ${[...points].pop().destination.name}`
-);
+export const getTripRoute = (points) => {
+  const sortedPointsOnStart = sortPointsByDateFrom(points);
+  const sortedPointsOnEnd = sortPointsByDateTo(points);
+
+  return (points.length <= SHOWN_POINTS) ?
+    sortedPointsOnStart.map((point) => point.destination.name).join(' &mdash; ') :
+    `${sortedPointsOnStart[0].destination.name} &mdash; ... &mdash; ${[...sortedPointsOnEnd].pop().destination.name}`;
+};
 
 export const getTotalCost = (points) => (
   points.

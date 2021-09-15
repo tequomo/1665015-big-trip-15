@@ -54,12 +54,11 @@ export default class PointNew {
     }
 
     document.removeEventListener('keydown', this._escKeyDownHandler);
-    // removeAnimationCSS();
   }
 
   setSaving() {
     this._pointAddEditComponent.updateData({
-      isDisabling: true,
+      isDisabled: true,
       isSaving: true,
     });
   }
@@ -87,7 +86,6 @@ export default class PointNew {
       UpdateType.MINOR,
       point,
     );
-    // this.destroy();
   }
 
   _handleButtonCancelClick() {

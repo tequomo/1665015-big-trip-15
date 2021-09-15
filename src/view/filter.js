@@ -31,13 +31,13 @@ export default class Filter extends AbstractView {
     return createTripFilterTemplate(this._filters, this._currentFilter);
   }
 
-  _radioChangeHandler(evt) {
-    evt.preventDefault();
-    this._callback.radioChange(evt.target.value);
-  }
-
   setRadioChangeHandler(callback) {
     this._callback.radioChange = callback;
     this.getElement().addEventListener('change', this._radioChangeHandler);
+  }
+
+  _radioChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.radioChange(evt.target.value);
   }
 }

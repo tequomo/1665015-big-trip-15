@@ -18,6 +18,12 @@ import { toast } from './utils/toast.js';
 const URI = 'https://13.ecmascript.pages.academy/big-trip/';
 const AUTHORIZATION = 'Basic mu041popsy=';
 
+const STORE_PREFIX = 'bigtrip-cache';
+const STORE_VER = 'v15';
+const POINTS_STORE_NAME = `${STORE_PREFIX}-${STORE_VER}-${DataPath.POINTS}`;
+const OFFERS_STORE_NAME = `${STORE_PREFIX}-${STORE_VER}-${DataPath.OFFERS}`;
+const DESTINATIONS_STORE_NAME = `${STORE_PREFIX}-${STORE_VER}-${DataPath.DESTINATIONS}`;
+
 let statsComponent = null;
 
 const bodyElement = document.querySelector('.page-body');
@@ -32,9 +38,10 @@ const statsContainerElement = mainElement.querySelector('.page-body__container')
 const addNewEventButton = document.querySelector('.trip-main__event-add-btn');
 
 const api = new Api(URI, AUTHORIZATION);
-const pointsStore = new Store(DataPath.POINTS, window.localStorage);
-const offersStore = new Store(DataPath.OFFERS, window.localStorage);
-const destinationsStore = new Store(DataPath.DESTINATIONS, window.localStorage);
+
+const pointsStore = new Store(POINTS_STORE_NAME, window.localStorage);
+const offersStore = new Store(OFFERS_STORE_NAME, window.localStorage);
+const destinationsStore = new Store(DESTINATIONS_STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, pointsStore, offersStore, destinationsStore);
 
 const pointsModel = new PointsModel();
