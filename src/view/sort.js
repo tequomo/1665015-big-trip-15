@@ -42,12 +42,12 @@ export default class Sort extends AbstractView {
     return createEventsSortTemplate(this._currentSortType);
   }
 
-  _radioChangeHandler(evt) {
-    this._callback.radioChange(evt.target.dataset.sortType);
-  }
-
   setRadioChangeHandler(callback) {
     this._callback.radioChange = callback;
     this.getElement().addEventListener('change', this._radioChangeHandler);
+  }
+
+  _radioChangeHandler(evt) {
+    this._callback.radioChange(evt.target.dataset.sortType);
   }
 }

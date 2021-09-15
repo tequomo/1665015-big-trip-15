@@ -54,7 +54,6 @@ export default class Point {
     }
 
     if (this._mode === Mode.EDITING) {
-      // replace(this._pointAddEditComponent, prevPointAddEditComponent);
       replace(this._pointComponent, prevPointAddEditComponent);
       this._mode = Mode.DEFAULT;
     }
@@ -170,7 +169,6 @@ export default class Point {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-    // this._replaceEditFormToPoint();
   }
 
   _handleFavoriteButtonClick() {

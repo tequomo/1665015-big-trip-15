@@ -1,4 +1,4 @@
-import { isOnline, removeAnimationCSS } from '../utils/common.js';
+import { isOnline } from '../utils/common.js';
 import { FormState, NEW_POINT, UpdateType, UserAction } from '../utils/const.js';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { toast } from '../utils/toast.js';
@@ -54,12 +54,11 @@ export default class PointNew {
     }
 
     document.removeEventListener('keydown', this._escKeyDownHandler);
-    removeAnimationCSS();
   }
 
   setSaving() {
     this._pointAddEditComponent.updateData({
-      isDisabling: true,
+      isDisabled: true,
       isSaving: true,
     });
   }
@@ -87,7 +86,6 @@ export default class PointNew {
       UpdateType.MINOR,
       point,
     );
-    // this.destroy();
   }
 
   _handleButtonCancelClick() {

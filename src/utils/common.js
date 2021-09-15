@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
 import durationPlugin from 'dayjs/plugin/duration';
 import { sortByKey } from './utils.js';
-import { FiltersType } from './const.js';
+import { BrowsingState, FiltersType } from './const.js';
 
 dayjs.extend(durationPlugin);
 
 const SHOWN_POINTS = 3;
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export const Messages = {
   [FiltersType.DEFAULT]: 'Click New Event to create your first point',
@@ -24,7 +25,7 @@ export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(poin
 
 export const formatDuration = (time) => {
   const durationObject = dayjs.duration(time);
-  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days()  ? '' : 'HH[H]'} mm[M]`);
+  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days() ? '' : 'HH[H]'} mm[M]`);
 };
 
 export const getDuration = (point) => {
@@ -43,24 +44,31 @@ export const showPointDataHelper = (dateFrom, dateTo) => {
   return [eventDate, shortEventDate, startTime, shortStartTime, endTime, shortEndTime];
 };
 
+const sortPointsByDateFrom = (points) => points.slice().sort((a, b) => a.dateFrom - b.dateFrom);
+const sortPointsByDateTo = (points) => points.slice().sort((a, b) => a.dateTo - b.dateTo);
+
 export const getTravelTime = (points) => {
-  const sortedByDateFrom = points.slice().sort((a, b) => a.dateFrom - b.dateFrom);
-  const sortedByDateTo = points.slice().sort((a, b) => a.dateTo - b.dateTo);
-  const startDateRaw = dayjs(sortedByDateFrom[0].dateFrom);
-  const endDateRaw = dayjs([...sortedByDateTo].pop().dateTo);
+  const sortedPointsOnStart = sortPointsByDateFrom(points);
+  const sortedPointsOnEnd = sortPointsByDateTo(points);
+  const startDateRaw = dayjs(sortedPointsOnStart[0].dateFrom);
+  const endDateRaw = dayjs([...sortedPointsOnEnd].pop().dateTo);
   const startDate = dayjs(startDateRaw).format('MMM DD');
   const endDate = (
     dayjs(startDateRaw).month() === dayjs(endDateRaw).month() ?
       dayjs(endDateRaw).format('DD') : dayjs(endDateRaw).format('MMM DD')
   );
+
   return `${startDate}&nbsp;&mdash;&nbsp;${endDate}`;
 };
 
-export const getTripRoute = (points) => (
-  (points.length <= SHOWN_POINTS) ?
-    points.map((point) => point.destination.name).join(' &mdash; ') :
-    `${points[0].destination.name} &mdash; ... &mdash; ${[...points].pop().destination.name}`
-);
+export const getTripRoute = (points) => {
+  const sortedPointsOnStart = sortPointsByDateFrom(points);
+  const sortedPointsOnEnd = sortPointsByDateTo(points);
+
+  return (points.length <= SHOWN_POINTS) ?
+    sortedPointsOnStart.map((point) => point.destination.name).join(' &mdash; ') :
+    `${sortedPointsOnStart[0].destination.name} &mdash; ... &mdash; ${[...sortedPointsOnEnd].pop().destination.name}`;
+};
 
 export const getTotalCost = (points) => (
   points.
@@ -93,14 +101,38 @@ export const showPseudoElement = () => {
 
 export const getUniqueMarkupName = (title) => title.split(' ').slice(-2).join('-').toLowerCase();
 
-export const addAnimationCSS = () => {
-  if(document.querySelector('shake-this')) {
+export const addInlineCSS = (id, content) => {
+  if (document.querySelector(`#${id}`)) {
     return;
   }
 
-  const animationCSS = document.createElement('style');
-  animationCSS.id = 'shake-this';
-  animationCSS.innerHTML = `
+  const inlineCSS = document.createElement('style');
+  inlineCSS.id = id;
+  inlineCSS.innerHTML = content;
+  document.head.appendChild(inlineCSS);
+};
+
+export const removeInlineCSS = (id) => {
+  const sheetToBeRemoved = document.querySelector(`#${id}`);
+  if (sheetToBeRemoved) {
+    const sheetParent = sheetToBeRemoved.parentNode;
+    sheetParent.removeChild(sheetToBeRemoved);
+  }
+};
+
+export const StyleId = {
+  PSEUDO: 'hide-pseudo',
+  SHAKE: 'shake-this',
+  TOAST: 'toast-style',
+};
+
+export const StyleContent = {
+  PSEUDO: `
+  *:after {
+    content: none !important;
+    display: none !important;
+  }`,
+  SHAKE: `
   @keyframes shake {
     0%,
     100% {
@@ -125,29 +157,8 @@ export const addAnimationCSS = () => {
 
   .shake {
     animation: shake 0.6s;
-  }`;
-  document.head.appendChild(animationCSS);
-};
-
-export const removeAnimationCSS =() => {
-  const sheetToBeRemoved = document.querySelector('#shake-this');
-  if(sheetToBeRemoved) {
-    const sheetParent = sheetToBeRemoved.parentNode;
-    sheetParent.removeChild(sheetToBeRemoved);
-  }
-};
-
-export const isOnline = () => window.navigator.onLine;
-
-export const addToastCSS = () => {
-  if(document.querySelector('toast-style')) {
-    return;
-  }
-
-  const toastCSS = document.createElement('style');
-  toastCSS.id = 'toast-style';
-
-  toastCSS.innerHTML = `
+  }`,
+  TOAST: `
   .toast-container {
     position: absolute;
     z-index: 1000;
@@ -173,14 +184,29 @@ export const addToastCSS = () => {
     border-radius: 0.2em;
     background-color: #575a5f;
     color: #ffffff;
-  }`;
-  document.head.appendChild(toastCSS);
+  }`,
 };
 
-export const removeToastCSS =() => {
-  const sheetToBeRemoved = document.querySelector('#toast-style');
-  if(sheetToBeRemoved) {
-    const sheetParent = sheetToBeRemoved.parentNode;
-    sheetParent.removeChild(sheetToBeRemoved);
+export const shakeButton = (element) => {
+  element.style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+  setTimeout(() => {
+    element.style.animation = '';
+  }, SHAKE_ANIMATION_TIMEOUT);
+};
+
+export const isOnline = () => window.navigator.onLine;
+
+export const changeHeaderStyle = (element, state) => {
+  switch (state) {
+    case BrowsingState.ONLINE:
+      document.title = document.title.replace(' [offline]', '');
+      element.style.backgroundImage = 'url("../img/header-bg.png")';
+      element.style.backgroundColor = '#078ff0';
+      break;
+    case BrowsingState.OFFLINE:
+      document.title += ' [offline]';
+      element.style.backgroundImage = 'none';
+      element.style.backgroundColor = '#96989b';
+      break;
   }
 };
