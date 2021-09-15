@@ -16,7 +16,7 @@ import Provider from './api/provider.js';
 import { toast } from './utils/toast.js';
 
 const URI = 'https://13.ecmascript.pages.academy/big-trip/';
-const AUTHORIZATION = 'Basic mu041popsyy';
+const AUTHORIZATION = 'Basic mu041popsy=';
 
 let statsComponent = null;
 
