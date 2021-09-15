@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import durationPlugin from 'dayjs/plugin/duration';
 import { sortByKey } from './utils.js';
-import { FiltersType } from './const.js';
+import { BrowsingState, FiltersType } from './const.js';
 
 dayjs.extend(durationPlugin);
 
@@ -24,7 +24,7 @@ export const getEventTimeDiff = (point) => (dayjs(point.dateTo)).diff(dayjs(poin
 
 export const formatDuration = (time) => {
   const durationObject = dayjs.duration(time);
-  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days()  ? '' : 'HH[H]'} mm[M]`);
+  return durationObject.format(`${!durationObject.days() ? '' : 'DD[D]'} ${!durationObject.hours() && !durationObject.days() ? '' : 'HH[H]'} mm[M]`);
 };
 
 export const getDuration = (point) => {
@@ -93,8 +93,88 @@ export const showPseudoElement = () => {
 
 export const getUniqueMarkupName = (title) => title.split(' ').slice(-2).join('-').toLowerCase();
 
+export const addInlineCSS = (id, content) => {
+  if (document.querySelector(`#${id}`)) {
+    return;
+  }
+
+  const inlineCSS = document.createElement('style');
+  inlineCSS.id = id;
+  inlineCSS.innerHTML = content;
+  document.head.appendChild(inlineCSS);
+};
+
+export const removeInlineCSS = (id) => {
+  const sheetToBeRemoved = document.querySelector(`#${id}`);
+  if (sheetToBeRemoved) {
+    const sheetParent = sheetToBeRemoved.parentNode;
+    sheetParent.removeChild(sheetToBeRemoved);
+  }
+};
+
+export const StyleContent = {
+  PSEUDO: `
+  *:after {
+    content: none !important;
+    display: none !important;
+  }`,
+  SHAKE: `
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(5px);
+    }
+  }
+
+  .shake {
+    animation: shake 0.6s;
+  }`,
+  TOAST: `
+  .toast-container {
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 0.4em;
+    padding-left: 0.4em;
+    width: 100%;
+    height: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    box-sizing: border-box;
+  }
+
+  .toast-item {
+    display: inline-flex;
+    margin-bottom: 0.4em;
+    padding: 0.4em;
+    border-radius: 0.2em;
+    background-color: #575a5f;
+    color: #ffffff;
+  }`,
+};
+
 export const addAnimationCSS = () => {
-  if(document.querySelector('shake-this')) {
+  if (document.querySelector('#shake-this')) {
     return;
   }
 
@@ -129,9 +209,9 @@ export const addAnimationCSS = () => {
   document.head.appendChild(animationCSS);
 };
 
-export const removeAnimationCSS =() => {
+export const removeAnimationCSS = () => {
   const sheetToBeRemoved = document.querySelector('#shake-this');
-  if(sheetToBeRemoved) {
+  if (sheetToBeRemoved) {
     const sheetParent = sheetToBeRemoved.parentNode;
     sheetParent.removeChild(sheetToBeRemoved);
   }
@@ -140,7 +220,7 @@ export const removeAnimationCSS =() => {
 export const isOnline = () => window.navigator.onLine;
 
 export const addToastCSS = () => {
-  if(document.querySelector('toast-style')) {
+  if (document.querySelector('#toast-style')) {
     return;
   }
 
@@ -177,10 +257,25 @@ export const addToastCSS = () => {
   document.head.appendChild(toastCSS);
 };
 
-export const removeToastCSS =() => {
+export const removeToastCSS = () => {
   const sheetToBeRemoved = document.querySelector('#toast-style');
-  if(sheetToBeRemoved) {
+  if (sheetToBeRemoved) {
     const sheetParent = sheetToBeRemoved.parentNode;
     sheetParent.removeChild(sheetToBeRemoved);
+  }
+};
+
+export const changeHeaderStyle = (element, state) => {
+  switch (state) {
+    case BrowsingState.ONLINE:
+      document.title = document.title.replace(' [offline]', '');
+      element.style.backgroundImage = 'url("../img/header-bg.png")';
+      element.style.backgroundColor = '#078ff0';
+      break;
+    case BrowsingState.OFFLINE:
+      document.title += ' [offline]';
+      element.style.backgroundImage = 'none';
+      element.style.backgroundColor = '#96989b';
+      break;
   }
 };

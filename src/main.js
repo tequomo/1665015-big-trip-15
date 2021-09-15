@@ -5,8 +5,8 @@ import FilterPresenter from './presenter/filter.js';
 import PointsModel from './model/points.js';
 import FilterModel from './model/filter.js';
 import StatView from './view/stat.js';
-import { DataPath, FiltersType, MenuItem, UpdateType } from './utils/const.js';
-import { addAnimationCSS, addToastCSS, hidePseudoElement, isOnline, showPseudoElement } from './utils/common.js';
+import { BrowsingState, DataPath, FiltersType, MenuItem, UpdateType } from './utils/const.js';
+import { addAnimationCSS, addToastCSS, changeHeaderStyle, hidePseudoElement, isOnline, showPseudoElement } from './utils/common.js';
 import TripInfoPresenter from './presenter/trip-info.js';
 import Api from './api/api.js';
 import OffersModel from './model/offers.js';
@@ -114,16 +114,12 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('online', () => {
-  document.title = document.title.replace(' [offline]', '');
-  headerElement.style.backgroundImage = 'url("../img/header-bg.png")';
-  headerElement.style.backgroundColor = '#078ff0';
+  changeHeaderStyle(headerElement, BrowsingState.ONLINE);
   toast('Yoy are currently online ;-)');
   apiWithProvider.sync();
 });
 
 window.addEventListener('offline', () => {
-  document.title += ' [offline]';
-  headerElement.style.backgroundImage = 'none';
-  headerElement.style.backgroundColor = '#96989b';
+  changeHeaderStyle(headerElement, BrowsingState.OFFLINE);
   toast('Connection lost. You\'re offline');
 });

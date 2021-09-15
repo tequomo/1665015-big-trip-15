@@ -73,3 +73,8 @@ export const NEW_POINT = {
   'isFavorite': false,
   'eventOffers': [],
 };
+
+export const BrowsingState = {
+  ONLINE: 'online',
+  OFFLINE: 'offline',
+};
