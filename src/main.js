@@ -15,7 +15,7 @@ import Store from './api/store.js';
 import Provider from './api/provider.js';
 import { toast } from './utils/toast.js';
 
-const URI = 'https://13.ecmascript.pages.academy/big-trip/';
+const URI = 'https://15.ecmascript.pages.academy/big-trip/';
 const AUTHORIZATION = 'Basic mu041popsy=';
 
 const STORE_PREFIX = 'bigtrip-cache';
