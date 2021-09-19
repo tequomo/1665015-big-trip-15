@@ -210,3 +210,7 @@ export const changeHeaderStyle = (element, state) => {
       break;
   }
 };
+
+export const toggleHiddenClass = (element) => {
+  element.classList.toggle('trip-events--hidden');
+};
