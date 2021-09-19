@@ -6,7 +6,7 @@ import PointsModel from './model/points.js';
 import FilterModel from './model/filter.js';
 import StatView from './view/stat.js';
 import { BrowsingState, DataPath, FiltersType, MenuItem, UpdateType } from './utils/const.js';
-import { addInlineCSS, changeHeaderStyle, isOnline, removeInlineCSS, shakeButton, StyleContent, StyleId } from './utils/common.js';
+import { addInlineCSS, changeHeaderStyle, isOnline, removeInlineCSS, shakeButton, StyleContent, StyleId, toggleHiddenClass } from './utils/common.js';
 import TripInfoPresenter from './presenter/trip-info.js';
 import Api from './api/api.js';
 import OffersModel from './model/offers.js';
@@ -67,6 +67,7 @@ const handleSiteMenuClick = (menuItem) => {
       remove(statsComponent);
       tripPresenter.init();
       removeInlineCSS(StyleId.PSEUDO);
+      toggleHiddenClass(tripEventsElement);
       break;
     case MenuItem.STATS:
       filterPresenter.disableFilters();
@@ -75,6 +76,7 @@ const handleSiteMenuClick = (menuItem) => {
       statsComponent = new StatView(pointsModel.getPoints());
       render(statsContainerElement, statsComponent, RenderPosition.BEFOREEND);
       addInlineCSS(StyleId.PSEUDO, StyleContent.PSEUDO);
+      toggleHiddenClass(tripEventsElement);
       break;
   }
 };
