@@ -61,7 +61,7 @@ export const Method = {
 };
 
 export const NEW_POINT = {
-  'eventType': '',
+  'eventType': 'flight',
   'dateFrom': dayjs(),
   'dateTo': dayjs(),
   'destination': {
