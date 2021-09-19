@@ -46,6 +46,12 @@ export default class Trip {
   createPoint(callback) {
     this._currentSortType = SortType.DEFAULT;
     this._filterModel.setFilter(UpdateType.MAJOR, FiltersType.DEFAULT);
+
+    if (this._messageComponent) {
+      remove(this._messageComponent);
+    }
+    this._renderList();
+
     this._pointNewPresenter.init(callback);
     document.querySelector('.trip-main__event-add-btn').disabled = true;
   }
